@@ -441,6 +441,17 @@
     document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
     initDarkMode();
     
+    // Delete
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => {
+  if(projectToDelete) {
+    moveToTrash('project', projectToDelete);
+    renderProjects();
+    updateStats();
+  }
+  document.getElementById('deleteConfirmModal').classList.add('hidden');
+  projectToDelete = null;
+});
+    
     // Export
     document.getElementById('exportBtnSidebar')?.addEventListener('click', () => {
       const exportData = {
