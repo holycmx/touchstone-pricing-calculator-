@@ -171,39 +171,9 @@ function initializeSampleData() {
 }
 
 // ============================================
-// DARK MODE - Professional Dark Theme
-// Matching your design system with dark mode colors
+// DARK MODE - Custom Burgundy Palette
+// Colors: #3A0519, #670D2F, #A53860, #EF88AD
 // ============================================
-
-// Dark mode color palette based on your design system
-// Light mode: Primary #A57982, Secondary #B98EA7, Tertiary #590004
-// Dark mode: Adjusted for readability and contrast
-
-const DARK_MODE_COLORS = {
-  // Primary becomes brighter for contrast
-  primary: '#D48C9B',
-  primaryHover: '#E29CAB',
-  // Secondary remains similar but slightly brighter
-  secondary: '#CB9DB8',
-  // Tertiary becomes more vibrant
-  tertiary: '#B84C4C',
-  // Background colors
-  background: '#0D0D0D',
-  surface: '#1A1A1A',
-  surfaceElevated: '#242424',
-  surfaceHighest: '#2A2A2A',
-  // Text colors
-  textPrimary: '#F0F0F0',
-  textSecondary: '#B0B0B0',
-  textMuted: '#6B7280',
-  // Border colors
-  border: '#2A2A2A',
-  borderLight: '#333333',
-  // Status colors
-  success: '#2E7D64',
-  warning: '#B45309',
-  error: '#B91C1C'
-};
 
 // Initialize dark mode when page loads
 function initDarkMode() {
@@ -249,34 +219,36 @@ function updateDarkModeButton() {
   });
 }
 
-// addDarkModeStyles() 
-
+// Add dark mode styles with custom burgundy palette
 function addDarkModeStyles() {
   const style = document.createElement('style');
   style.textContent = `
     /* ============================================
-       DARK MODE - HIGH CONTRAST PROFESSIONAL THEME
-       WCAG AA Compliant (4.5:1 contrast ratio minimum)
+       DARK MODE - Custom Burgundy Palette
+       Colors: #3A0519 (deep burgundy)
+               #670D2F (medium burgundy)
+               #A53860 (rose pink)
+               #EF88AD (soft pink)
     ============================================ */
     
     .dark {
       color-scheme: dark;
     }
     
-    /* Base Background - Dark but not pure black */
+    /* Base Background - Deep burgundy */
     .dark body {
-      background-color: #121212 !important;
-      color: #FFFFFF !important;
+      background-color: #3A0519 !important;
+      color: #FCE8F0 !important;
     }
     
     /* Main Containers */
     .dark .bg-[#FDF9F4],
     .dark .bg-background,
     .dark body {
-      background-color: #121212 !important;
+      background-color: #3A0519 !important;
     }
     
-    /* Cards and Surfaces - Slightly lighter than background */
+    /* Cards and Surfaces - Medium burgundy */
     .dark .bg-white,
     .dark .bg-surface,
     .dark .bg-surface-container,
@@ -287,7 +259,15 @@ function addDarkModeStyles() {
     .dark .rounded-xl,
     .dark .rounded-2xl,
     .dark [class*="bg-white"] {
-      background-color: #1E1E1E !important;
+      background-color: #4D0A26 !important;
+    }
+    
+    /* Elevated surfaces - Rose pink accent */
+    .dark .shadow-sm,
+    .dark .shadow-md,
+    .dark .shadow-lg,
+    .dark .card-hover:hover {
+      background-color: #670D2F !important;
     }
     
     /* Semi-transparent backgrounds */
@@ -300,10 +280,10 @@ function addDarkModeStyles() {
     .dark .bg-white/30,
     .dark .bg-white/20,
     .dark .bg-white/10 {
-      background-color: rgba(30, 30, 30, 0.95) !important;
+      background-color: rgba(103, 13, 47, 0.95) !important;
     }
     
-    /* Borders - Visible but subtle */
+    /* Borders - Soft pink */
     .dark .border,
     .dark .border-t,
     .dark .border-b,
@@ -315,11 +295,11 @@ function addDarkModeStyles() {
     .dark .border-primary\/30,
     .dark .border-gray-200,
     .dark .border-gray-300 {
-      border-color: #3A3A3A !important;
+      border-color: #A53860 !important;
     }
     
-    /* TEXT COLORS - HIGH CONTRAST */
-    /* Primary text - pure white for maximum contrast */
+    /* TEXT COLORS - High contrast against burgundy */
+    /* Primary text - Soft white */
     .dark .text-gray-800,
     .dark .text-gray-700,
     .dark .text-on-surface,
@@ -328,171 +308,178 @@ function addDarkModeStyles() {
     .dark .font-semibold,
     .dark .font-headline,
     .dark .text-on-surface {
-      color: #FFFFFF !important;
+      color: #FCE8F0 !important;
     }
     
-    /* Secondary text - light gray, still high contrast */
+    /* Secondary text - Soft pink */
     .dark .text-gray-600,
     .dark .text-gray-500,
     .dark .text-on-surface-variant,
     .dark .text-secondary,
     .dark p:not(.text-primary),
     .dark .text-sm:not(.text-primary) {
-      color: #E0E0E0 !important;
+      color: #EF88AD !important;
     }
     
-    /* Muted text - lighter but readable (contrast ~5:1 on dark bg) */
+    /* Muted text - Light pink */
     .dark .text-gray-400,
     .dark .text-gray-300,
     .dark .text-xs,
     .dark .text-gray-500 {
-      color: #B0B0B0 !important;
+      color: #D46F96 !important;
     }
     
-    /* PRIMARY COLOR - Brighter for better visibility */
+    /* PRIMARY COLOR - Bright pink accent */
     .dark .bg-primary {
-      background-color: #C97B8A !important;
+      background-color: #EF88AD !important;
     }
     
     .dark .bg-primary\/10 {
-      background-color: rgba(201, 123, 138, 0.2) !important;
+      background-color: rgba(239, 136, 173, 0.2) !important;
     }
     
     .dark .bg-primary\/20 {
-      background-color: rgba(201, 123, 138, 0.3) !important;
+      background-color: rgba(239, 136, 173, 0.3) !important;
     }
     
     .dark .text-primary {
-      color: #E29CAB !important;
+      color: #FF9FBF !important;
     }
     
     .dark .hover\:bg-primary\/10:hover {
-      background-color: rgba(201, 123, 138, 0.25) !important;
+      background-color: rgba(239, 136, 173, 0.25) !important;
     }
     
     .dark .hover\:bg-primary\/20:hover {
-      background-color: rgba(201, 123, 138, 0.35) !important;
+      background-color: rgba(239, 136, 173, 0.35) !important;
     }
     
-    /* SECONDARY COLOR */
+    /* SECONDARY COLOR - Rose pink */
     .dark .bg-secondary {
-      background-color: #D4A5C0 !important;
+      background-color: #A53860 !important;
     }
     
     .dark .text-secondary {
-      color: #E2B8D0 !important;
+      color: #EF88AD !important;
     }
     
-    /* TERTIARY COLOR */
+    /* TERTIARY COLOR - Deep rose */
     .dark .bg-tertiary {
-      background-color: #C55A5A !important;
+      background-color: #670D2F !important;
     }
     
     .dark .text-tertiary {
-      color: #E07A7A !important;
+      color: #FFB3CD !important;
     }
     
-    /* Stats Cards - Slightly elevated background */
+    /* Stats Cards - Deep burgundy */
     .dark .bg-\[#FAF2FE\],
     .dark .bg-gray-50,
     .dark .bg-gray-100 {
-      background-color: #2A2A2A !important;
+      background-color: #670D2F !important;
     }
     
     /* Buttons */
     .dark button:not(.bg-primary):not(.bg-red-500):not(.bg-green-500):not(.bg-blue-500) {
-      background-color: #2A2A2A !important;
-      color: #FFFFFF !important;
+      background-color: #670D2F !important;
+      color: #FCE8F0 !important;
+      border: 1px solid #A53860 !important;
     }
     
     .dark button:not(.bg-primary):not(.bg-red-500):not(.bg-green-500):not(.bg-blue-500):hover {
-      background-color: #3A3A3A !important;
+      background-color: #A53860 !important;
+      color: #FFFFFF !important;
     }
     
-    /* Input Fields - Clear visibility */
+    /* Input Fields */
     .dark input,
     .dark textarea,
     .dark select {
-      background-color: #2A2A2A !important;
-      border-color: #4A4A4A !important;
-      color: #FFFFFF !important;
+      background-color: #670D2F !important;
+      border-color: #A53860 !important;
+      color: #FCE8F0 !important;
     }
     
     .dark input:focus,
     .dark textarea:focus,
     .dark select:focus {
-      border-color: #E29CAB !important;
+      border-color: #EF88AD !important;
       outline: none !important;
-      box-shadow: 0 0 0 2px rgba(226, 156, 171, 0.3) !important;
+      box-shadow: 0 0 0 2px rgba(239, 136, 173, 0.3) !important;
     }
     
     .dark input::placeholder,
     .dark textarea::placeholder {
-      color: #9CA3AF !important;
+      color: #EF88AD !important;
     }
     
     /* Sidebar */
     .dark aside,
     .dark .fixed.left-0 {
-      background-color: #0A0A0A !important;
-      border-right-color: #2A2A2A !important;
+      background-color: #2F0414 !important;
+      border-right-color: #670D2F !important;
     }
     
     .dark nav a {
-      color: #E0E0E0 !important;
+      color: #EF88AD !important;
     }
     
     .dark nav a:hover {
-      background-color: #2A2A2A !important;
-      color: #FFFFFF !important;
+      background-color: #670D2F !important;
+      color: #FF9FBF !important;
     }
     
     .dark nav a.bg-primary\/10 {
-      background-color: rgba(201, 123, 138, 0.2) !important;
-      color: #E29CAB !important;
+      background-color: rgba(239, 136, 173, 0.2) !important;
+      color: #FF9FBF !important;
     }
     
     /* Modals */
     .dark .fixed.bg-white,
     .dark .modal-content,
     .dark [class*="fixed"] > .bg-white {
-      background-color: #1E1E1E !important;
-      border-color: #3A3A3A !important;
+      background-color: #4D0A26 !important;
+      border-color: #A53860 !important;
     }
     
     /* Progress Bars */
     .dark .bg-gray-100,
     .dark .bg-gray-200 {
-      background-color: #2A2A2A !important;
+      background-color: #670D2F !important;
     }
     
-    /* Status Badges - High contrast colors */
+    /* Progress bar fill */
+    .dark .bg-primary.rounded-full {
+      background-color: #EF88AD !important;
+    }
+    
+    /* Status Badges */
     .dark .bg-green-100 {
-      background-color: #0F3B2C !important;
-      color: #A3E9C4 !important;
+      background-color: #1F5A3A !important;
+      color: #EF88AD !important;
     }
     
     .dark .bg-green-50 {
-      background-color: #0F3B2C !important;
+      background-color: #1F5A3A !important;
     }
     
     .dark .text-green-600,
     .dark .text-green-500 {
-      color: #A3E9C4 !important;
+      color: #FFB3CD !important;
     }
     
     .dark .bg-amber-100 {
-      background-color: #4D3A1A !important;
-      color: #FFD966 !important;
+      background-color: #8B5A2B !important;
+      color: #EF88AD !important;
     }
     
     .dark .bg-red-100 {
-      background-color: #5C1E1E !important;
-      color: #FFA5A5 !important;
+      background-color: #8B2B2B !important;
+      color: #EF88AD !important;
     }
     
     .dark .bg-red-50 {
-      background-color: #5C1E1E !important;
+      background-color: #8B2B2B !important;
     }
     
     .dark .text-red-600,
@@ -501,68 +488,68 @@ function addDarkModeStyles() {
     }
     
     .dark .bg-blue-100 {
-      background-color: #1C3B5C !important;
-      color: #9AC8FF !important;
+      background-color: #2B4B8B !important;
+      color: #EF88AD !important;
     }
     
     /* Links */
     .dark a:not(.text-primary) {
-      color: #E0E0E0 !important;
+      color: #EF88AD !important;
     }
     
     .dark a:not(.text-primary):hover {
-      color: #E29CAB !important;
+      color: #FF9FBF !important;
     }
     
     /* Quill Editor Dark Mode */
     .dark .ql-toolbar {
-      background-color: #1E1E1E !important;
-      border-color: #3A3A3A !important;
+      background-color: #4D0A26 !important;
+      border-color: #A53860 !important;
     }
     
     .dark .ql-toolbar button {
-      color: #FFFFFF !important;
+      color: #FCE8F0 !important;
     }
     
     .dark .ql-toolbar button .ql-stroke {
-      stroke: #FFFFFF !important;
+      stroke: #EF88AD !important;
     }
     
     .dark .ql-toolbar button .ql-fill {
-      fill: #FFFFFF !important;
+      fill: #EF88AD !important;
     }
     
     .dark .ql-toolbar button:hover {
-      background-color: #2A2A2A !important;
+      background-color: #670D2F !important;
     }
     
     .dark .ql-editor {
-      background-color: #1E1E1E !important;
-      color: #FFFFFF !important;
+      background-color: #4D0A26 !important;
+      color: #FCE8F0 !important;
     }
     
     .dark .ql-picker {
-      color: #FFFFFF !important;
+      color: #EF88AD !important;
     }
     
     .dark .ql-picker-options {
-      background-color: #2A2A2A !important;
-      color: #FFFFFF !important;
+      background-color: #670D2F !important;
+      color: #FCE8F0 !important;
     }
     
     /* Toast Notifications */
     .dark .bg-green-500 {
-      background-color: #0F3B2C !important;
+      background-color: #1F5A3A !important;
       color: #FFFFFF !important;
     }
     
     .dark .bg-red-500 {
-      background-color: #5C1E1E !important;
+      background-color: #8B2B2B !important;
       color: #FFFFFF !important;
     }
     
     .dark .bg-blue-500 {
-      background-color: #1C3B5C !important;
+      background-color: #2B4B8B !important;
       color: #FFFFFF !important;
     }
     
@@ -573,22 +560,22 @@ function addDarkModeStyles() {
     }
     
     .dark ::-webkit-scrollbar-track {
-      background: #1E1E1E;
+      background: #3A0519;
     }
     
     .dark ::-webkit-scrollbar-thumb {
-      background: #4A4A4A;
+      background: #A53860;
       border-radius: 5px;
     }
     
     .dark ::-webkit-scrollbar-thumb:hover {
-      background: #5A5A5A;
+      background: #EF88AD;
     }
     
     /* Dropdown menus */
     .dark select option {
-      background-color: #2A2A2A;
-      color: #FFFFFF;
+      background-color: #670D2F;
+      color: #FCE8F0;
     }
     
     /* Icons */
@@ -598,33 +585,66 @@ function addDarkModeStyles() {
     
     /* Dividers */
     .dark hr {
-      border-color: #3A3A3A !important;
+      border-color: #A53860 !important;
     }
     
     /* Cards with hover effects */
     .dark .card-hover:hover,
     .dark .hover\:shadow-lg:hover {
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
-      background-color: #2A2A2A !important;
-    }
-    
-    /* Progress bar fill */
-    .dark .bg-primary.rounded-full {
-      background-color: #E29CAB !important;
+      background-color: #670D2F !important;
     }
     
     /* Project cards */
     .dark [data-project-id] {
-      background-color: #1E1E1E !important;
+      background-color: #4D0A26 !important;
     }
     
     .dark [data-project-id]:hover {
-      background-color: #2A2A2A !important;
+      background-color: #670D2F !important;
     }
     
     /* Sidebar active state */
     .dark .bg-primary\/10 {
-      background-color: rgba(201, 123, 138, 0.2) !important;
+      background-color: rgba(239, 136, 173, 0.2) !important;
+    }
+    
+    /* Stats numbers */
+    .dark .text-3xl,
+    .dark .text-2xl.font-bold {
+      color: #EF88AD !important;
+    }
+    
+    /* Headers in stats cards */
+    .dark .text-primary.font-bold {
+      color: #EF88AD !important;
+    }
+    
+    /* Insight section */
+    .dark .bg-\[#FAF2FE\] {
+      background-color: #670D2F !important;
+    }
+    
+    /* Buttons with outline */
+    .dark .border-primary {
+      border-color: #EF88AD !important;
+    }
+    
+    /* Modal close button */
+    .dark .text-gray-400:hover {
+      color: #EF88AD !important;
+    }
+    
+    /* Selected items */
+    .dark .selected,
+    .dark [aria-selected="true"] {
+      background-color: #A53860 !important;
+      color: #FFFFFF !important;
+    }
+    
+    /* Headline text */
+    .dark .font-headline {
+      color: #FF9FBF !important;
     }
   `;
   document.head.appendChild(style);
@@ -1049,8 +1069,4 @@ window.exportAllData = exportAllData;
 window.importData = importData;
 window.resetAllData = resetAllData;
 window.escapeHtml = escapeHtml;
-window.moveToTrash = moveToTrash;
-window.restoreFromArchive = restoreFromArchive;
-window.toggleDarkMode = toggleDarkMode;
-window.initDarkMode = initDarkMode;
-window.showNotification = showNotification;
+window.moveToTr
