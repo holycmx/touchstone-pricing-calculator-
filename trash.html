@@ -173,3 +173,9 @@
     const a = document.createElement('a');
     a.href = url;
     a.download = `storybrain_export_${new Date().toISOString().slice(0,19)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>
+</body>
+</html>
