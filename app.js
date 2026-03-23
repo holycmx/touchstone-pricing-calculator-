@@ -171,8 +171,39 @@ function initializeSampleData() {
 }
 
 // ============================================
-// DARK MODE - WORKS ACROSS ALL PAGES
+// DARK MODE - Professional Dark Theme
+// Matching your design system with dark mode colors
 // ============================================
+
+// Dark mode color palette based on your design system
+// Light mode: Primary #A57982, Secondary #B98EA7, Tertiary #590004
+// Dark mode: Adjusted for readability and contrast
+
+const DARK_MODE_COLORS = {
+  // Primary becomes brighter for contrast
+  primary: '#D48C9B',
+  primaryHover: '#E29CAB',
+  // Secondary remains similar but slightly brighter
+  secondary: '#CB9DB8',
+  // Tertiary becomes more vibrant
+  tertiary: '#B84C4C',
+  // Background colors
+  background: '#0D0D0D',
+  surface: '#1A1A1A',
+  surfaceElevated: '#242424',
+  surfaceHighest: '#2A2A2A',
+  // Text colors
+  textPrimary: '#F0F0F0',
+  textSecondary: '#B0B0B0',
+  textMuted: '#6B7280',
+  // Border colors
+  border: '#2A2A2A',
+  borderLight: '#333333',
+  // Status colors
+  success: '#2E7D64',
+  warning: '#B45309',
+  error: '#B91C1C'
+};
 
 // Initialize dark mode when page loads
 function initDarkMode() {
@@ -197,9 +228,11 @@ function toggleDarkMode() {
   if (document.documentElement.classList.contains('dark')) {
     document.documentElement.classList.remove('dark');
     localStorage.setItem('darkMode', 'false');
+    showNotification('☀️ Light mode enabled', 'info');
   } else {
     document.documentElement.classList.add('dark');
     localStorage.setItem('darkMode', 'true');
+    showNotification('🌙 Dark mode enabled', 'info');
   }
   updateDarkModeButton();
 }
@@ -216,63 +249,337 @@ function updateDarkModeButton() {
   });
 }
 
-// Add dark mode CSS to all pages
+// Add dark mode CSS to all pages - Professional dark theme
 function addDarkModeStyles() {
   const style = document.createElement('style');
   style.textContent = `
-    /* Dark mode styles */
+    /* ============================================
+       DARK MODE - Professional Theme
+       Based on your design system colors
+    ============================================ */
+    
     .dark {
       color-scheme: dark;
     }
+    
+    /* Base Background */
     .dark body {
-      background-color: #1a1a1a;
-      color: #e5e5e5;
+      background-color: #0D0D0D !important;
+      color: #F0F0F0 !important;
     }
-    .dark .bg-white {
-      background-color: #2d2d2d !important;
+    
+    /* Main Containers */
+    .dark .bg-[#FDF9F4],
+    .dark .bg-background {
+      background-color: #0D0D0D !important;
     }
-    .dark .bg-[#FDF9F4] {
-      background-color: #1a1a1a !important;
+    
+    /* Cards and Surfaces */
+    .dark .bg-white,
+    .dark .bg-surface,
+    .dark .bg-surface-container,
+    .dark .bg-surface-container-low,
+    .dark .bg-surface-container-lowest,
+    .dark .bg-surface-container-high,
+    .dark .bg-surface-container-highest {
+      background-color: #1A1A1A !important;
     }
-    .dark .border-[#EADDF0] {
-      border-color: #404040 !important;
+    
+    .dark .bg-white/90,
+    .dark .bg-white/80,
+    .dark .bg-white/70 {
+      background-color: rgba(26, 26, 26, 0.95) !important;
     }
-    .dark .text-gray-800 {
-      color: #e5e5e5 !important;
+    
+    /* Elevated Elements */
+    .dark .shadow-sm,
+    .dark .shadow-md,
+    .dark .shadow-lg {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
     }
-    .dark .text-gray-500 {
-      color: #9ca3af !important;
+    
+    /* Borders */
+    .dark .border,
+    .dark .border-t,
+    .dark .border-b,
+    .dark .border-l,
+    .dark .border-r,
+    .dark .border-[#EADDF0],
+    .dark .border-primary\/10,
+    .dark .border-primary\/20,
+    .dark .border-primary\/30 {
+      border-color: #2A2A2A !important;
     }
+    
+    .dark .border-dashed {
+      border-color: #3A3A3A !important;
+    }
+    
+    /* Text Colors */
+    .dark .text-gray-800,
+    .dark .text-gray-700,
+    .dark .text-on-surface {
+      color: #F0F0F0 !important;
+    }
+    
+    .dark .text-gray-600,
+    .dark .text-gray-500,
+    .dark .text-on-surface-variant {
+      color: #B0B0B0 !important;
+    }
+    
+    .dark .text-gray-400,
+    .dark .text-gray-300 {
+      color: #6B7280 !important;
+    }
+    
+    /* Primary Color - Brighter version of #A57982 */
+    .dark .bg-primary {
+      background-color: #D48C9B !important;
+    }
+    
+    .dark .bg-primary\/10 {
+      background-color: rgba(212, 140, 155, 0.15) !important;
+    }
+    
+    .dark .bg-primary\/20 {
+      background-color: rgba(212, 140, 155, 0.25) !important;
+    }
+    
+    .dark .text-primary {
+      color: #D48C9B !important;
+    }
+    
+    .dark .hover\:bg-primary\/10:hover {
+      background-color: rgba(212, 140, 155, 0.2) !important;
+    }
+    
+    .dark .hover\:bg-primary\/20:hover {
+      background-color: rgba(212, 140, 155, 0.3) !important;
+    }
+    
+    /* Secondary Color */
+    .dark .bg-secondary {
+      background-color: #CB9DB8 !important;
+    }
+    
+    .dark .text-secondary {
+      color: #CB9DB8 !important;
+    }
+    
+    /* Tertiary Color */
+    .dark .bg-tertiary {
+      background-color: #B84C4C !important;
+    }
+    
+    .dark .text-tertiary {
+      color: #B84C4C !important;
+    }
+    
+    /* Stats Cards and Info Sections */
+    .dark .bg-\[#FAF2FE\] {
+      background-color: #1E1A2A !important;
+    }
+    
+    /* Buttons */
+    .dark button:not(.bg-primary):not(.bg-red-500):not(.bg-green-500):not(.bg-blue-500) {
+      background-color: #242424 !important;
+      color: #F0F0F0 !important;
+    }
+    
+    .dark button:not(.bg-primary):not(.bg-red-500):not(.bg-green-500):not(.bg-blue-500):hover {
+      background-color: #2F2F2F !important;
+    }
+    
+    /* Input Fields */
+    .dark input,
+    .dark textarea,
+    .dark select {
+      background-color: #242424 !important;
+      border-color: #3A3A3A !important;
+      color: #F0F0F0 !important;
+    }
+    
+    .dark input:focus,
+    .dark textarea:focus,
+    .dark select:focus {
+      border-color: #D48C9B !important;
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(212, 140, 155, 0.2) !important;
+    }
+    
+    .dark input::placeholder,
+    .dark textarea::placeholder {
+      color: #6B7280 !important;
+    }
+    
+    /* Sidebar */
+    .dark aside,
+    .dark .bg-white\/90 {
+      background-color: #0D0D0D !important;
+      border-right-color: #2A2A2A !important;
+    }
+    
+    .dark .hover\:bg-\[\#F3E9F5\]:hover {
+      background-color: #242424 !important;
+    }
+    
+    /* Modals */
+    .dark .fixed.bg-white,
+    .dark .modal-content {
+      background-color: #1A1A1A !important;
+      border-color: #2A2A2A !important;
+    }
+    
+    /* Progress Bars */
+    .dark .bg-gray-100,
+    .dark .bg-gray-200 {
+      background-color: #2A2A2A !important;
+    }
+    
+    /* Status Badges */
+    .dark .bg-green-100 {
+      background-color: #14532D !important;
+      color: #86EFAC !important;
+    }
+    
+    .dark .bg-green-50 {
+      background-color: #14532D !important;
+    }
+    
+    .dark .text-green-600 {
+      color: #86EFAC !important;
+    }
+    
+    .dark .bg-amber-100 {
+      background-color: #78350F !important;
+      color: #FCD34D !important;
+    }
+    
+    .dark .bg-red-100 {
+      background-color: #991B1B !important;
+      color: #FECACA !important;
+    }
+    
+    .dark .bg-red-50 {
+      background-color: #7F1A1A !important;
+    }
+    
+    .dark .text-red-600 {
+      color: #FECACA !important;
+    }
+    
+    .dark .bg-blue-100 {
+      background-color: #1E3A8A !important;
+      color: #93C5FD !important;
+    }
+    
     .dark .bg-gray-100 {
-      background-color: #3d3d3d !important;
+      background-color: #2A2A2A !important;
+      color: #E5E7EB !important;
     }
-    .dark .bg-[#FAF2FE] {
-      background-color: #2d2d2d !important;
-    }
-    .dark .bg-surface-container-low {
-      background-color: #2d2d2d !important;
-    }
-    .dark .bg-white/90 {
-      background-color: #2d2d2d !important;
-    }
-    .dark .hover\:bg-gray-100:hover {
-      background-color: #404040 !important;
-    }
+    
+    /* Quill Editor Dark Mode */
     .dark .ql-toolbar {
-      background-color: #2d2d2d !important;
-      border-color: #404040 !important;
+      background-color: #1A1A1A !important;
+      border-color: #2A2A2A !important;
     }
+    
+    .dark .ql-toolbar button {
+      color: #F0F0F0 !important;
+    }
+    
+    .dark .ql-toolbar button:hover {
+      background-color: #2A2A2A !important;
+    }
+    
     .dark .ql-editor {
-      background-color: #2d2d2d !important;
-      color: #e5e5e5 !important;
+      background-color: #1A1A1A !important;
+      color: #F0F0F0 !important;
+    }
+    
+    .dark .ql-stroke {
+      stroke: #F0F0F0 !important;
+    }
+    
+    .dark .ql-fill {
+      fill: #F0F0F0 !important;
+    }
+    
+    .dark .ql-picker {
+      color: #F0F0F0 !important;
+    }
+    
+    .dark .ql-picker-options {
+      background-color: #2A2A2A !important;
+    }
+    
+    /* Toast Notifications */
+    .dark .bg-green-500 {
+      background-color: #2E7D64 !important;
+    }
+    
+    .dark .bg-red-500 {
+      background-color: #B91C1C !important;
+    }
+    
+    .dark .bg-blue-500 {
+      background-color: #1E40AF !important;
+    }
+    
+    /* Scrollbar */
+    .dark ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    .dark ::-webkit-scrollbar-track {
+      background: #1A1A1A;
+    }
+    
+    .dark ::-webkit-scrollbar-thumb {
+      background: #3A3A3A;
+      border-radius: 4px;
+    }
+    
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background: #4A4A4A;
+    }
+    
+    /* Links */
+    .dark a:not(.text-primary) {
+      color: #B0B0B0 !important;
+    }
+    
+    .dark a:not(.text-primary):hover {
+      color: #D48C9B !important;
+    }
+    
+    /* Icons */
+    .dark .material-symbols-outlined {
+      color: inherit;
+    }
+    
+    /* Dividers */
+    .dark hr {
+      border-color: #2A2A2A !important;
     }
   `;
   document.head.appendChild(style);
 }
 
-// Call this on every page
-initDarkMode();
-addDarkModeStyles();
+// Simple notification helper
+function showNotification(message, type = 'info') {
+  const notif = document.createElement('div');
+  notif.className = `fixed bottom-4 right-4 p-3 rounded-lg shadow-lg z-50 animate-slide-in ${
+    type === 'success' ? 'bg-green-500 text-white' : 
+    type === 'error' ? 'bg-red-500 text-white' : 
+    'bg-primary text-white'
+  }`;
+  notif.innerHTML = message;
+  document.body.appendChild(notif);
+  setTimeout(() => notif.remove(), 3000);
+}
 
 // ============================================
 // PROJECT MANAGEMENT FUNCTIONS
@@ -637,6 +944,10 @@ function escapeHtml(text) {
 // Load state when script loads
 loadState();
 
+// Initialize dark mode
+initDarkMode();
+addDarkModeStyles();
+
 // Listen for storage events to sync across tabs
 window.addEventListener('storage', (e) => {
   if (e.key === 'storyBrainState' && e.newValue) {
@@ -678,3 +989,6 @@ window.resetAllData = resetAllData;
 window.escapeHtml = escapeHtml;
 window.moveToTrash = moveToTrash;
 window.restoreFromArchive = restoreFromArchive;
+window.toggleDarkMode = toggleDarkMode;
+window.initDarkMode = initDarkMode;
+window.showNotification = showNotification;
