@@ -91,7 +91,115 @@
           </div>
         </div>
       </div>
+<!-- Add after character grid -->
+<div class="mt-8">
+  <button id="showRelationshipMapBtn" class="bg-primary/10 text-primary px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary/20 transition flex items-center gap-2">
+    <span class="material-symbols-outlined text-[18px]">account_tree</span>
+    View Relationship Map
+  </button>
+</div>
 
+<!-- Relationship Map Modal -->
+<div id="relationshipMapModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[85vh] overflow-auto m-4 p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-headline font-bold">Character Relationship Map</h3>
+      <button onclick="document.getElementById('relationshipMapModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">&times;</button>
+    </div>
+    <div id="relationshipCanvas" class="min-h-[500px] relative">
+      <!-- Force-directed graph visualization -->
+      <canvas id="relationshipCanvas" width="800" height="500" class="w-full h-auto border rounded-xl"></canvas>
+    </div>
+    <div class="mt-4 text-sm text-gray-500 text-center">
+      Lines represent connections through plot threads. Click on a character to see details.
+    </div>
+  </div>
+</div>
+
+<script>
+  // Relationship Map Logic
+  function drawRelationshipMap() {
+    const canvas = document.getElementById('relationshipCanvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width = Math.min(800, window.innerWidth - 100);
+    const height = canvas.height = 500;
+    
+    const characters = state.characters || [];
+    const threads = state.plotThreads || [];
+    
+    // Build relationships
+    const relationships = [];
+    const charMap = {};
+    characters.forEach((c, i) => { charMap[c.name] = i; });
+    
+    threads.forEach(thread => {
+      const linkedNames = (thread.linkedCharacters || '').split(',').map(s => s.trim());
+      for (let i = 0; i < linkedNames.length; i++) {
+        for (let j = i + 1; j < linkedNames.length; j++) {
+          const charA = linkedNames[i];
+          const charB = linkedNames[j];
+          if (charMap[charA] !== undefined && charMap[charB] !== undefined) {
+            relationships.push({ from: charA, to: charB, thread: thread.name });
+          }
+        }
+      }
+    });
+    
+    // Draw nodes
+    const positions = [];
+    const radius = 40;
+    const angleStep = (Math.PI * 2) / characters.length;
+    
+    characters.forEach((char, i) => {
+      const angle = angleStep * i;
+      const x = width/2 + Math.cos(angle) * (width/3);
+      const y = height/2 + Math.sin(angle) * (height/3);
+      positions.push({ x, y, char });
+      
+      // Draw connections
+      relationships.forEach(rel => {
+        const fromIndex = characters.findIndex(c => c.name === rel.from);
+        const toIndex = characters.findIndex(c => c.name === rel.to);
+        if (fromIndex === i || toIndex === i) {
+          const otherIndex = fromIndex === i ? toIndex : fromIndex;
+          const otherPos = positions[otherIndex];
+          if (otherPos) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(otherPos.x, otherPos.y);
+            ctx.strokeStyle = '#A57982';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+        }
+      });
+    });
+    
+    // Draw nodes
+    positions.forEach(pos => {
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius/2, 0, Math.PI * 2);
+      ctx.fillStyle = '#FDF9F4';
+      ctx.fill();
+      ctx.strokeStyle = '#A57982';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      ctx.fillStyle = '#2C1E2A';
+      ctx.font = 'bold 12px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(pos.char.name, pos.x, pos.y + radius/3);
+    });
+  }
+  
+  document.getElementById('showRelationshipMapBtn')?.addEventListener('click', () => {
+    document.getElementById('relationshipMapModal').classList.remove('hidden');
+    setTimeout(drawRelationshipMap, 100);
+  });
+</script>
+      
       <!-- RIGHT: Character Detail Panel (Dynamic) -->
       <aside id="detailPanel" class="w-[420px] bg-white border-l border-[#EADDF0] overflow-y-auto shadow-xl flex-shrink-0 hidden">
         <div class="relative h-48 w-full bg-gradient-to-br from-primary/20 to-secondary/20">
