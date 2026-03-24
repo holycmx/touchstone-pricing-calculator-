@@ -221,7 +221,7 @@ function addDarkModeStyles() {
   const style = document.createElement('style');
   style.textContent = `
     /* ============================================
-       DARK MODE - CSS Variables Theme
+       DARK MODE - CSS Variables Theme - COMPLETE COVERAGE
        Based on provided design tokens
     ============================================ */
     
@@ -269,25 +269,34 @@ function addDarkModeStyles() {
       --clr-info-a20: #92b2e5;
     }
     
-    /* Apply CSS variables to elements */
+    /* Apply CSS variables to ALL elements */
     .dark {
       color-scheme: dark;
     }
     
-    /* Base Background */
-    .dark body {
-      background-color: var(--clr-surface-a0) !important;
-      color: var(--clr-light-a0) !important;
-    }
-    
-    /* Main Containers */
-    .dark .bg-[#FDF9F4],
+    /* Base Background - COMPLETE COVERAGE */
+    .dark body,
+    .dark .bg-\[#FDF9F4\],
     .dark .bg-background,
-    .dark body {
+    .dark [class*="bg-\[#FDF9F4\]"],
+    .dark [class*="bg-\[\#FDF9F4\]"] {
       background-color: var(--clr-surface-a0) !important;
     }
     
-    /* Cards and Surfaces */
+    /* Header/Top Bar - Fix the beige header issue */
+    .dark header,
+    .dark .sticky.top-0,
+    .dark .sticky,
+    .dark [class*="backdrop-blur"],
+    .dark .bg-\[#FDF9F4\]\/80,
+    .dark .bg-white\/80,
+    .dark [class*="bg-white\/80"] {
+      background-color: var(--clr-surface-a0) !important;
+      backdrop-filter: blur(8px) !important;
+      border-bottom-color: var(--clr-surface-a20) !important;
+    }
+    
+    /* All background colors - COMPREHENSIVE COVERAGE */
     .dark .bg-white,
     .dark .bg-surface,
     .dark .bg-surface-container,
@@ -297,8 +306,26 @@ function addDarkModeStyles() {
     .dark .bg-surface-container-highest,
     .dark .rounded-xl,
     .dark .rounded-2xl,
-    .dark [class*="bg-white"] {
+    .dark [class*="bg-white"],
+    .dark [class*="bg-gray-50"],
+    .dark [class*="bg-gray-100"],
+    .dark [class*="bg-gray-200"],
+    .dark [class*="bg-gray-300"],
+    .dark [class*="bg-gray-400"] {
       background-color: var(--clr-surface-a10) !important;
+    }
+    
+    /* Cards and containers */
+    .dark .bg-white\/90,
+    .dark .bg-white\/80,
+    .dark .bg-white\/70,
+    .dark .bg-white\/60,
+    .dark .bg-white\/50,
+    .dark .bg-white\/40,
+    .dark .bg-white\/30,
+    .dark .bg-white\/20,
+    .dark .bg-white\/10 {
+      background-color: rgba(40, 40, 40, 0.95) !important;
     }
     
     /* Elevated surfaces */
@@ -309,7 +336,7 @@ function addDarkModeStyles() {
       background-color: var(--clr-surface-a20) !important;
     }
     
-    /* Borders */
+    /* Borders - All borders */
     .dark .border,
     .dark .border-t,
     .dark .border-b,
@@ -317,18 +344,26 @@ function addDarkModeStyles() {
     .dark .border-r,
     .dark .border-[#EADDF0],
     .dark .border-gray-200,
-    .dark .border-gray-300 {
+    .dark .border-gray-300,
+    .dark [class*="border-"] {
       border-color: var(--clr-surface-a20) !important;
     }
     
-    /* TEXT COLORS */
+    /* TEXT COLORS - ALL TEXT */
     .dark .text-gray-800,
     .dark .text-gray-700,
+    .dark .text-gray-900,
     .dark .text-on-surface,
-    .dark h1, .dark h2, .dark h3, .dark h4,
+    .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6,
     .dark .font-bold,
     .dark .font-semibold,
-    .dark .font-headline {
+    .dark .font-headline,
+    .dark .text-2xl,
+    .dark .text-3xl,
+    .dark .text-xl,
+    .dark .text-lg,
+    .dark [class*="text-gray-800"],
+    .dark [class*="text-gray-700"] {
       color: var(--clr-light-a0) !important;
     }
     
@@ -336,12 +371,16 @@ function addDarkModeStyles() {
     .dark .text-gray-500,
     .dark .text-on-surface-variant,
     .dark p:not(.text-primary),
-    .dark .text-sm:not(.text-primary) {
+    .dark .text-sm:not(.text-primary),
+    .dark [class*="text-gray-600"],
+    .dark [class*="text-gray-500"] {
       color: var(--clr-surface-a50) !important;
     }
     
     .dark .text-gray-400,
-    .dark .text-gray-300 {
+    .dark .text-gray-300,
+    .dark [class*="text-gray-400"],
+    .dark [class*="text-gray-300"] {
       color: var(--clr-surface-a40) !important;
     }
     
@@ -379,10 +418,11 @@ function addDarkModeStyles() {
       color: var(--clr-primary-a20) !important;
     }
     
-    /* Stats Cards */
+    /* Stats Cards and Info Sections */
     .dark .bg-\[#FAF2FE\],
     .dark .bg-gray-50,
-    .dark .bg-gray-100 {
+    .dark .bg-gray-100,
+    .dark [class*="bg-\[#FAF2FE\]"] {
       background-color: var(--clr-surface-tonal-a0) !important;
     }
     
@@ -421,7 +461,8 @@ function addDarkModeStyles() {
     
     /* Sidebar */
     .dark aside,
-    .dark .fixed.left-0 {
+    .dark .fixed.left-0,
+    .dark [class*="fixed left-0"] {
       background-color: var(--clr-dark-a0) !important;
       border-right-color: var(--clr-surface-a10) !important;
     }
@@ -646,6 +687,24 @@ function addDarkModeStyles() {
     /* Info text */
     .dark .text-info {
       color: var(--clr-info-a10) !important;
+    }
+    
+    /* Dashboard specific - Hero section */
+    .dark .bg-surface-container-low {
+      background-color: var(--clr-surface-a10) !important;
+    }
+    
+    /* Ensure all cards have proper background */
+    .dark .bg-white.rounded-xl,
+    .dark .bg-white.rounded-2xl {
+      background-color: var(--clr-surface-a10) !important;
+    }
+    
+    /* Fix any remaining beige backgrounds */
+    .dark [class*="bg-\[#"],
+    .dark [class*="bg-#"],
+    .dark [style*="background"] {
+      background-color: var(--clr-surface-a10) !important;
     }
   `;
   document.head.appendChild(style);
