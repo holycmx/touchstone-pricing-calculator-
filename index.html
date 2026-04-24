@@ -8,390 +8,108 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --navy:  #1A1A2E;
-    --gold:  #C9A84C;
-    --cream: #F8F6F1;
-    --warm:  #FDFCFA;
-    --dark:  #1A1A1A;
-    --mid:   #555555;
-    --light: #999999;
-    --rule:  #E0DDD7;
-    --green: #2E7D32;
-    --greenl:#E8F5E9;
-    --amber: #E65100;
-    --amberl:#FFF3E0;
-    --red:   #C62828;
-    --redl:  #FFEBEE;
+    --navy: #1A1A2E; --gold: #C9A84C; --cream: #F8F6F1; --warm: #FDFCFA;
+    --dark: #1A1A1A; --mid: #555555; --light: #999999; --rule: #E0DDD7;
+    --green: #2E7D32; --greenl: #E8F5E9;
+    --amber: #E65100; --amberl: #FFF3E0;
+    --red: #C62828; --redl: #FFEBEE;
   }
+  body { font-family: 'Jost', sans-serif; font-weight: 300; background: var(--cream); color: var(--dark); min-height: 100vh; }
 
-  body {
-    font-family: 'Jost', sans-serif;
-    font-weight: 300;
-    background: var(--cream);
-    color: var(--dark);
-    min-height: 100vh;
-  }
+  header { background: var(--navy); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; letter-spacing: 4px; color: white; }
+  .logo-sub { font-size: 9px; letter-spacing: 5px; color: var(--gold); display: block; margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .header-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
 
-  /* ── HEADER ── */
-  header {
-    background: var(--navy);
-    padding: 20px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .logo-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 300;
-    letter-spacing: 4px;
-    color: white;
-  }
-  .logo-sub {
-    font-size: 9px;
-    letter-spacing: 5px;
-    color: var(--gold);
-    display: block;
-    margin-top: 2px;
-  }
-  .header-title {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
-  }
+  .top-bar { background: var(--navy); padding: 0 40px 16px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .toggle-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+  .toggle { display: flex; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .toggle-btn { padding: 7px 18px; font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer; transition: all 0.2s; background: none; color: rgba(255,255,255,0.4); }
+  .toggle-btn.active { background: var(--gold); color: var(--navy); font-weight: 600; }
 
-  /* ── TOGGLE ── */
-  .toggle-wrap {
-    background: var(--navy);
-    padding: 0 40px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .toggle-label {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-  }
-  .toggle {
-    display: flex;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .toggle-btn {
-    padding: 8px 20px;
-    font-family: 'Jost', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: none;
-    color: rgba(255,255,255,0.5);
-  }
-  .toggle-btn.active {
-    background: var(--gold);
-    color: var(--navy);
-    font-weight: 600;
-  }
+  .io-btns { display: flex; gap: 8px; margin-left: auto; }
+  .io-btn { padding: 7px 14px; font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; border: 0.5px solid rgba(255,255,255,0.2); background: none; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.2s; }
+  .io-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-  /* ── LAYOUT ── */
-  .app {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 0;
-    min-height: calc(100vh - 100px);
-  }
+  .app { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 108px); }
+  .form-panel { padding: 28px 36px; border-right: 0.5px solid var(--rule); overflow-y: auto; }
+  .results-panel { background: var(--navy); padding: 28px 24px; display: flex; flex-direction: column; gap: 0; position: sticky; top: 0; height: calc(100vh - 108px); overflow-y: auto; }
 
-  /* ── FORM PANEL ── */
-  .form-panel {
-    padding: 32px 40px;
-    border-right: 0.5px solid var(--rule);
-    overflow-y: auto;
-  }
-
-  .section-head {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 300;
-    color: var(--navy);
-    margin-bottom: 4px;
-  }
-  .section-rule {
-    width: 32px;
-    height: 1px;
-    background: var(--gold);
-    margin-bottom: 20px;
-    margin-top: 8px;
-  }
-  .form-section {
-    margin-bottom: 32px;
-    padding-bottom: 32px;
-    border-bottom: 0.5px solid var(--rule);
-  }
+  .section-head { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; color: var(--navy); margin-bottom: 4px; }
+  .section-rule { width: 28px; height: 1px; background: var(--gold); margin: 6px 0 16px; }
+  .form-section { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 0.5px solid var(--rule); }
   .form-section:last-of-type { border-bottom: none; }
 
-  .field-label {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--light);
-    margin-bottom: 6px;
-    display: block;
-  }
-  .field-input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 0.5px solid var(--rule);
-    background: white;
-    font-family: 'Jost', sans-serif;
-    font-size: 14px;
-    font-weight: 300;
-    color: var(--dark);
-    outline: none;
-    transition: border-color 0.2s;
-    appearance: none;
-  }
+  .field-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--light); margin-bottom: 5px; display: block; }
+  .field-input { width: 100%; padding: 9px 12px; border: 0.5px solid var(--rule); background: white; font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 300; color: var(--dark); outline: none; transition: border-color 0.2s; appearance: none; }
   .field-input:focus { border-color: var(--navy); }
   .field-input::placeholder { color: var(--light); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .field-group { margin-bottom: 10px; }
 
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .field-group { margin-bottom: 12px; }
-
-  /* ── PILL SELECTORS ── */
-  .pill-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-  .pill {
-    padding: 7px 16px;
-    border: 0.5px solid var(--rule);
-    background: white;
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--mid);
-    user-select: none;
-  }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+  .pill { padding: 6px 13px; border: 0.5px solid var(--rule); background: white; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 0.5px; cursor: pointer; transition: all 0.15s; color: var(--mid); user-select: none; }
   .pill:hover { border-color: var(--navy); color: var(--navy); }
   .pill.active { background: var(--navy); color: white; border-color: var(--navy); }
-  .pill.gold-active { background: var(--gold); color: var(--navy); border-color: var(--gold); font-weight: 600; }
 
-  /* ── CHECKBOX ── */
-  .check-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
-  .check-row input[type="checkbox"] { display: none; }
-  .check-box {
-    width: 18px;
-    height: 18px;
-    border: 0.5px solid var(--rule);
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
-  .check-row input:checked ~ .check-label-wrap .check-box,
-  .check-box.checked {
-    background: var(--navy);
-    border-color: var(--navy);
-  }
-  .check-box.checked::after { content: '✓'; color: white; font-size: 11px; }
-  .check-label { font-size: 13px; color: var(--mid); }
-
-  /* ── WORKERS ── */
-  .worker-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 10px;
-    align-items: end;
-    margin-bottom: 10px;
-  }
-  .remove-btn {
-    padding: 10px 14px;
-    background: none;
-    border: 0.5px solid var(--rule);
-    cursor: pointer;
-    color: var(--light);
-    font-size: 14px;
-    transition: all 0.2s;
-  }
+  .worker-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 8px; }
+  .remove-btn { padding: 9px 12px; background: none; border: 0.5px solid var(--rule); cursor: pointer; color: var(--light); font-size: 12px; transition: all 0.2s; }
   .remove-btn:hover { border-color: var(--red); color: var(--red); }
-  .add-btn {
-    padding: 8px 16px;
-    background: none;
-    border: 0.5px solid var(--gold);
-    color: var(--gold);
-    font-family: 'Jost', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 4px;
-  }
+  .add-btn { padding: 7px 14px; background: none; border: 0.5px solid var(--gold); color: var(--gold); font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
   .add-btn:hover { background: var(--gold); color: var(--navy); }
 
-  /* ── SERVICES ── */
-  .service-card {
-    border: 0.5px solid var(--rule);
-    padding: 16px;
-    margin-bottom: 12px;
-    background: white;
-    position: relative;
-  }
-  .service-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .service-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    color: var(--rule);
-  }
+  .service-card { border: 0.5px solid var(--rule); padding: 14px; margin-bottom: 10px; background: white; }
+  .service-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .service-num { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--rule); }
 
-  /* ── RESULTS PANEL ── */
-  .results-panel {
-    background: var(--navy);
-    padding: 32px 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    position: sticky;
-    top: 0;
-    height: calc(100vh - 100px);
-    overflow-y: auto;
-  }
+  .work-style-toggle { display: flex; border: 0.5px solid var(--rule); overflow: hidden; margin-bottom: 10px; }
+  .ws-btn { flex: 1; padding: 7px 8px; font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; border: none; cursor: pointer; background: white; color: var(--mid); transition: all 0.2s; text-align: center; }
+  .ws-btn.active { background: var(--navy); color: white; }
 
-  .results-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    font-weight: 300;
-    color: white;
-    margin-bottom: 4px;
-  }
-  .results-rule {
-    width: 28px;
-    height: 1px;
-    background: var(--gold);
-    margin-bottom: 20px;
-    margin-top: 8px;
-  }
+  .suggest-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 10px; }
+  .suggest-btn { padding: 9px 14px; background: var(--gold); border: none; color: var(--navy); font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; font-weight: 600; }
+  .suggest-btn:hover { background: #d4ae52; }
 
-  .result-block {
-    background: rgba(255,255,255,0.05);
-    border: 0.5px solid rgba(255,255,255,0.08);
-    padding: 16px;
-    margin-bottom: 10px;
-  }
-  .result-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.35);
-    margin-bottom: 4px;
-  }
-  .result-value {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
-    font-weight: 300;
-    color: white;
-    line-height: 1;
-  }
-  .result-sub {
-    font-size: 11px;
-    color: rgba(255,255,255,0.4);
-    margin-top: 4px;
-  }
+  .check-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer; }
+  .check-box { width: 16px; height: 16px; border: 0.5px solid var(--rule); background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .check-box.checked { background: var(--navy); border-color: var(--navy); }
+  .check-box.checked::after { content: '✓'; color: white; font-size: 10px; }
+  .check-label { font-size: 12px; color: var(--mid); }
 
-  .breakdown-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 0.5px solid rgba(255,255,255,0.06);
-    font-size: 12px;
-  }
+  /* Results */
+  .results-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: white; margin-bottom: 4px; }
+  .results-rule { width: 24px; height: 1px; background: var(--gold); margin: 6px 0 16px; }
+  .result-block { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.08); padding: 12px; margin-bottom: 8px; }
+  .result-label { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 3px; }
+  .result-value { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: white; line-height: 1; }
+  .result-sub { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 0.5px solid rgba(255,255,255,0.06); font-size: 11px; }
   .breakdown-row:last-child { border-bottom: none; }
   .breakdown-label { color: rgba(255,255,255,0.5); }
   .breakdown-value { color: white; font-weight: 400; }
+  .breakdown-value.highlight { color: var(--gold); font-weight: 600; }
 
-  .margin-indicator {
-    padding: 10px 14px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 10px;
-  }
+  .margin-indicator { padding: 8px 12px; font-size: 10px; letter-spacing: 0.5px; text-align: center; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
   .margin-good { background: var(--greenl); color: var(--green); }
   .margin-warn { background: var(--amberl); color: var(--amber); }
   .margin-bad  { background: var(--redl);   color: var(--red); }
 
-  /* internal-only rows */
-  .internal-only { transition: opacity 0.3s; }
-  .client-mode .internal-only { opacity: 0; height: 0; overflow: hidden; margin: 0; padding: 0; border: none; }
+  .internal-only { transition: all 0.2s; }
+  .client-mode .internal-only { display: none !important; }
 
-  /* ── DOWNLOAD BTNS ── */
-  .download-section { margin-top: auto; padding-top: 16px; }
-  .dl-btn {
-    width: 100%;
-    padding: 14px;
-    font-family: 'Jost', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .dl-internal {
-    background: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.8);
-    border: 0.5px solid rgba(255,255,255,0.2);
-  }
-  .dl-internal:hover { background: rgba(255,255,255,0.2); }
-  .dl-client {
-    background: var(--gold);
-    color: var(--navy);
-    font-weight: 600;
-  }
-  .dl-client:hover { background: #d4b050; }
+  .download-section { margin-top: auto; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .dl-btn { width: 100%; padding: 12px; font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .dl-internal { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: 0.5px solid rgba(255,255,255,0.15); }
+  .dl-internal:hover { background: rgba(255,255,255,0.15); }
+  .dl-client { background: var(--gold); color: var(--navy); font-weight: 600; }
+  .dl-client:hover { background: #d4ae52; }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     .app { grid-template-columns: 1fr; }
     .results-panel { position: static; height: auto; }
-    .form-panel { padding: 24px 20px; }
-    header, .toggle-wrap { padding-left: 20px; padding-right: 20px; }
+    .form-panel, header, .top-bar { padding-left: 16px; padding-right: 16px; }
   }
 </style>
 </head>
@@ -405,26 +123,29 @@
   <span class="header-title">Job Pricing Calculator</span>
 </header>
 
-<div class="toggle-wrap">
-  <span class="toggle-label">View mode</span>
+<div class="top-bar">
+  <span class="toggle-label">View</span>
   <div class="toggle">
     <button class="toggle-btn active" id="btnInternal" onclick="setMode('internal')">Internal</button>
     <button class="toggle-btn" id="btnClient" onclick="setMode('client')">Client</button>
   </div>
+  <div class="io-btns">
+    <button class="io-btn" onclick="saveQuote()">↓ Save Quote</button>
+    <button class="io-btn" onclick="document.getElementById('loadInput').click()">↑ Load Quote</button>
+    <input type="file" id="loadInput" accept=".json" style="display:none" onchange="loadQuote(event)">
+  </div>
 </div>
 
 <div class="app">
-
-  <!-- ── FORM ── -->
   <div class="form-panel">
 
-    <!-- Client Info -->
+    <!-- Client -->
     <div class="form-section">
       <h2 class="section-head">Client Details</h2>
       <div class="section-rule"></div>
       <div class="field-row">
         <div class="field-group">
-          <label class="field-label">Client / Company Name</label>
+          <label class="field-label">Company / Client Name</label>
           <input class="field-input" id="clientName" placeholder="Acme Ltd" oninput="calc()">
         </div>
         <div class="field-group">
@@ -432,19 +153,25 @@
           <input class="field-input" id="contactName" placeholder="Jane Smith" oninput="calc()">
         </div>
       </div>
-      <div class="field-group">
-        <label class="field-label">Address / Postcode</label>
-        <input class="field-input" id="clientAddress" placeholder="SE1 7PB" oninput="calc()">
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Address / Postcode</label>
+          <input class="field-input" id="clientAddress" placeholder="SE1 7PB" oninput="calc()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Target Labour % (for suggestions)</label>
+          <input class="field-input" type="number" id="targetLabourPct" value="30" min="1" max="100" oninput="calc()">
+        </div>
       </div>
       <div class="field-group">
-        <label class="field-label">Notes (internal only)</label>
+        <label class="field-label">Internal Notes</label>
         <input class="field-input" id="notes" placeholder="Any relevant context..." oninput="calc()">
       </div>
     </div>
 
     <!-- Workers -->
     <div class="form-section">
-      <h2 class="section-head">Workers</h2>
+      <h2 class="section-head">Team</h2>
       <div class="section-rule"></div>
       <div id="workerList"></div>
       <button class="add-btn" onclick="addWorker()">+ Add Worker</button>
@@ -462,27 +189,25 @@
     <div class="form-section">
       <h2 class="section-head">Add-Ons</h2>
       <div class="section-rule"></div>
-
       <label class="field-label">Workspace Consumables</label>
       <div class="pill-group" id="consumables">
-        <div class="pill active" data-val="0" onclick="selectAddon('consumables', this, 0)">None</div>
-        <div class="pill" data-val="45" onclick="selectAddon('consumables', this, 45)">Small — £45/mo</div>
-        <div class="pill" data-val="80" onclick="selectAddon('consumables', this, 80)">Medium — £80/mo</div>
-        <div class="pill" data-val="140" onclick="selectAddon('consumables', this, 140)">Large — £140/mo</div>
+        <div class="pill active" onclick="selectAddon('consumables',this,0)">None</div>
+        <div class="pill" onclick="selectAddon('consumables',this,45)">Small — £45/mo</div>
+        <div class="pill" onclick="selectAddon('consumables',this,80)">Medium — £80/mo</div>
+        <div class="pill" onclick="selectAddon('consumables',this,140)">Large — £140/mo</div>
       </div>
-
-      <label class="field-label" style="margin-top:12px;">Workspace Wellbeing</label>
+      <label class="field-label" style="margin-top:10px;">Workspace Wellbeing</label>
       <div class="pill-group" id="wellbeing">
-        <div class="pill active" data-val="0" onclick="selectAddon('wellbeing', this, 0)">None</div>
-        <div class="pill" data-val="65" onclick="selectAddon('wellbeing', this, 65)">Essential — £65/mo</div>
-        <div class="pill" data-val="110" onclick="selectAddon('wellbeing', this, 110)">Standard — £110/mo</div>
-        <div class="pill" data-val="175" onclick="selectAddon('wellbeing', this, 175)">Premium — £175/mo</div>
+        <div class="pill active" onclick="selectAddon('wellbeing',this,0)">None</div>
+        <div class="pill" onclick="selectAddon('wellbeing',this,65)">Essential — £65/mo</div>
+        <div class="pill" onclick="selectAddon('wellbeing',this,110)">Standard — £110/mo</div>
+        <div class="pill" onclick="selectAddon('wellbeing',this,175)">Premium — £175/mo</div>
       </div>
     </div>
 
   </div>
 
-  <!-- ── RESULTS ── -->
+  <!-- Results -->
   <div class="results-panel" id="resultsPanel">
     <h2 class="results-title">Pricing Summary</h2>
     <div class="results-rule"></div>
@@ -496,9 +221,13 @@
     </div>
 
     <div class="result-block">
-      <div class="result-label">Monthly Total</div>
+      <div class="result-label">Monthly Cleaning</div>
       <div class="result-value" id="rMonthly">£0</div>
-      <div class="result-sub" id="rMonthlySub">cleaning only</div>
+    </div>
+
+    <div class="result-block internal-only" id="profitBlock">
+      <div class="result-label">Monthly Profit Estimate</div>
+      <div id="profitRows"></div>
     </div>
 
     <div class="result-block internal-only" id="breakdownBlock">
@@ -518,149 +247,122 @@
     </div>
 
     <div class="download-section">
-      <button class="dl-btn dl-internal" onclick="downloadPDF('internal')">
-        ↓ Download Internal Estimate
-      </button>
-      <button class="dl-btn dl-client" onclick="downloadPDF('client')">
-        ↓ Download Client Quote
-      </button>
+      <button class="dl-btn dl-internal internal-only" onclick="downloadPDF('internal')">↓ Internal Estimate PDF</button>
+      <button class="dl-btn dl-client" onclick="downloadPDF('client')">↓ Client Quote PDF</button>
     </div>
   </div>
-
 </div>
 
 <script>
-  // ── STATE ──
   let mode = 'internal';
   let workers = [];
   let services = [];
   let addonConsumables = 0;
   let addonWellbeing = 0;
-  let workerIdCounter = 0;
-  let serviceIdCounter = 0;
+  let wId = 0, sId = 0;
 
-  const FREQ_DISCOUNTS = {
-    'daily': { label: 'Daily (5x/wk)', discount: 0.15, sessionsPerMonth: 22 },
-    '3x':    { label: '3x per week',   discount: 0.10, sessionsPerMonth: 13 },
-    '2x':    { label: '2x per week',   discount: 0.05, sessionsPerMonth: 9  },
-    'weekly':{ label: 'Weekly',        discount: 0,    sessionsPerMonth: 4  },
-    'adhoc': { label: 'Ad hoc',        discount: -0.20,sessionsPerMonth: 1  },
-    'oneoff':{ label: 'One-off',       discount: -0.20,sessionsPerMonth: 1  },
+  const FREQS = {
+    'daily':  { label:'Daily (5x/wk)',  discount:0.15,  spm:22 },
+    '3x':     { label:'3x per week',    discount:0.10,  spm:13 },
+    '2x':     { label:'2x per week',    discount:0.05,  spm:9  },
+    'weekly': { label:'Weekly',         discount:0,     spm:4  },
+    'adhoc':  { label:'Ad hoc',         discount:-0.20, spm:1  },
+    'oneoff': { label:'One-off',        discount:-0.20, spm:1  },
   };
 
-  const SIZE_RATES = {
-    'small':  { label: 'Small (up to 500 sq ft)',    base: 110, hours: 2   },
-    'medium': { label: 'Medium (500–1,500 sq ft)',   base: 185, hours: 3.5 },
-    'large':  { label: 'Large (1,500–3,000 sq ft)',  base: 320, hours: 6   },
-    'cowork': { label: 'Co-working / Complex',       base: 0,   hours: 0   },
-    'eot':    { label: 'End of Tenancy',             base: 0,   hours: 0   },
-    'postbuild':{ label: 'Post-Build Clean',         base: 0,   hours: 0   },
+  const SIZES = {
+    'small':     { label:'Office — Small (up to 500 sq ft)',  base:110, hours:2   },
+    'medium':    { label:'Office — Medium (500–1,500 sq ft)', base:185, hours:3.5 },
+    'large':     { label:'Office — Large (1,500–3,000 sq ft)',base:320, hours:6   },
+    'cowork':    { label:'Co-working / Complex',              base:0,   hours:0   },
+    'eot':       { label:'End of Tenancy',                    base:0,   hours:0   },
+    'postbuild': { label:'Post-Build / Construction',         base:0,   hours:0   },
   };
 
-  const EOT_RATES = { '1bed': 200, '2bed': 260, '3bed': 320 };
+  const EOT = { '1bed':200, '2bed':260, '3bed':320 };
 
-  // ── INIT ──
-  addWorker();
-  addService();
+  function defaultService() {
+    return { id:sId++, type:'small', freq:'weekly', customPrice:'', hours:2,
+      firstClean:false, poorCondition:false, postbuildWindows:0, postbuildSevere:false,
+      eotSize:'1bed', workersPerSession:1, workStyle:'team' };
+  }
+
+  addWorker(); addService();
 
   function setMode(m) {
     mode = m;
-    document.getElementById('btnInternal').classList.toggle('active', m === 'internal');
-    document.getElementById('btnClient').classList.toggle('active', m === 'client');
+    ['btnInternal','btnClient'].forEach(id => document.getElementById(id).classList.toggle('active', id === `btn${m.charAt(0).toUpperCase()+m.slice(1)}`));
     document.getElementById('resultsPanel').classList.toggle('client-mode', m === 'client');
-    calc();
   }
 
-  // ── WORKERS ──
   function addWorker() {
-    const id = workerIdCounter++;
-    workers.push({ id, name: id === 0 ? 'Li' : '', rate: 15 });
-    renderWorkers();
-    calc();
+    workers.push({ id:wId++, name: workers.length===0?'Li':'', rate:15 });
+    renderWorkers(); calc();
   }
-
   function removeWorker(id) {
     if (workers.length <= 1) return;
     workers = workers.filter(w => w.id !== id);
-    renderWorkers();
-    calc();
+    renderWorkers(); calc();
   }
-
-  function updateWorker(id, field, val) {
-    const w = workers.find(w => w.id === id);
-    if (w) { w[field] = val; calc(); }
+  function updateWorker(id, f, v) {
+    const w = workers.find(w=>w.id===id);
+    if (w) { w[f]=v; calc(); }
   }
-
   function renderWorkers() {
-    const el = document.getElementById('workerList');
-    el.innerHTML = workers.map(w => `
+    document.getElementById('workerList').innerHTML = workers.map(w=>`
       <div class="worker-row">
         <div class="field-group" style="margin:0">
           <label class="field-label">Name</label>
-          <input class="field-input" value="${w.name}" placeholder="Worker name"
-            oninput="updateWorker(${w.id},'name',this.value)">
+          <input class="field-input" value="${w.name}" placeholder="Worker name" oninput="updateWorker(${w.id},'name',this.value)">
         </div>
         <div class="field-group" style="margin:0">
-          <label class="field-label">Hourly Rate (£)</label>
-          <input class="field-input" type="number" value="${w.rate}" min="0" step="0.5"
-            oninput="updateWorker(${w.id},'rate',parseFloat(this.value)||0)">
+          <label class="field-label">£/hr</label>
+          <input class="field-input" type="number" value="${w.rate}" min="0" step="0.5" oninput="updateWorker(${w.id},'rate',parseFloat(this.value)||0)">
         </div>
-        <button class="remove-btn" onclick="removeWorker(${w.id})" title="Remove">✕</button>
-      </div>
-    `).join('');
+        <button class="remove-btn" onclick="removeWorker(${w.id})">✕</button>
+      </div>`).join('');
   }
 
-  // ── SERVICES ──
-  function addService() {
-    const id = serviceIdCounter++;
-    services.push({
-      id, type: 'small', freq: 'weekly',
-      customPrice: '', hours: 2,
-      firstClean: false, poorCondition: false,
-      postbuildWindows: 0, postbuildSevere: false,
-      eotSize: '1bed', coworkPrice: ''
-    });
-    renderServices();
-    calc();
-  }
-
+  function addService() { services.push(defaultService()); renderServices(); calc(); }
   function removeService(id) {
     if (services.length <= 1) return;
-    services = services.filter(s => s.id !== id);
-    renderServices();
-    calc();
+    services = services.filter(s=>s.id!==id); renderServices(); calc();
   }
-
-  function updateService(id, field, val) {
-    const s = services.find(s => s.id === id);
-    if (s) {
-      s[field] = val;
-      if (field === 'type') {
-        const r = SIZE_RATES[val];
-        if (r) s.hours = r.hours;
-      }
-      renderServices();
-      calc();
-    }
+  function updateService(id, f, v) {
+    const s = services.find(s=>s.id===id);
+    if (!s) return;
+    s[f] = v;
+    if (f==='type') { const r=SIZES[v]; if(r) s.hours=r.hours; }
+    renderServices(); calc();
+  }
+  function setWorkStyle(id, style) {
+    const s = services.find(s=>s.id===id);
+    if (s) { s.workStyle=style; renderServices(); calc(); }
+  }
+  function suggestPrice(id) {
+    const s = services.find(s=>s.id===id);
+    if (!s) return;
+    const targetPct = parseFloat(document.getElementById('targetLabourPct').value) || 30;
+    const avgRate = workers.length ? workers.reduce((sum,w)=>sum+(parseFloat(w.rate)||0),0)/workers.length : 15;
+    const wps = s.workersPerSession || 1;
+    const baseHours = parseFloat(s.hours) || 2;
+    const effectiveHours = s.workStyle==='team' && wps > 1 ? baseHours/wps : baseHours;
+    const labourCost = wps * avgRate * effectiveHours;
+    const suggested = Math.ceil(labourCost / (targetPct/100));
+    s.customPrice = suggested;
+    renderServices(); calc();
   }
 
   function renderServices() {
-    const el = document.getElementById('serviceList');
-    el.innerHTML = services.map((s, i) => {
-      const isEot = s.type === 'eot';
-      const isCowork = s.type === 'cowork';
-      const isPostbuild = s.type === 'postbuild';
-      const showFreq = !isEot;
-      const showCustom = isCowork || isPostbuild;
-      const showHours = !isEot;
-
+    document.getElementById('serviceList').innerHTML = services.map((s,i)=>{
+      const isEot = s.type==='eot';
+      const isCustom = s.type==='cowork'||s.type==='postbuild';
       return `
       <div class="service-card">
         <div class="service-card-head">
           <span class="service-num">0${i+1}</span>
-          ${services.length > 1 ? `<button class="remove-btn" onclick="removeService(${s.id})">✕ Remove</button>` : ''}
+          ${services.length>1?`<button class="remove-btn" onclick="removeService(${s.id})">✕ Remove</button>`:''}
         </div>
-
         <div class="field-group">
           <label class="field-label">Service Type</label>
           <select class="field-input" onchange="updateService(${s.id},'type',this.value)">
@@ -673,7 +375,7 @@
           </select>
         </div>
 
-        ${isEot ? `
+        ${isEot?`
           <div class="field-group">
             <label class="field-label">Property Size</label>
             <div class="pill-group">
@@ -681,44 +383,55 @@
               <div class="pill ${s.eotSize==='2bed'?'active':''}" onclick="updateService(${s.id},'eotSize','2bed')">2 Bed — £260</div>
               <div class="pill ${s.eotSize==='3bed'?'active':''}" onclick="updateService(${s.id},'eotSize','3bed')">3 Bed — £320</div>
             </div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Estimated Hours</label>
-            <input class="field-input" type="number" value="${s.hours||4}" min="1" step="0.5"
-              oninput="updateService(${s.id},'hours',parseFloat(this.value)||4)">
-          </div>
-        ` : ''}
+          </div>`:''}
 
-        ${showCustom ? `
-          <div class="field-group">
-            <label class="field-label">Quote Price (£ per session)</label>
-            <input class="field-input" type="number" value="${s.customPrice}" placeholder="Enter your price"
-              oninput="updateService(${s.id},'customPrice',this.value)">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Estimated Hours</label>
-            <input class="field-input" type="number" value="${s.hours}" min="0.5" step="0.5"
-              oninput="updateService(${s.id},'hours',parseFloat(this.value)||0)">
-          </div>
-        ` : ''}
-
-        ${showFreq ? `
+        ${isCustom?`
           <div class="field-group">
             <label class="field-label">Frequency</label>
             <div class="pill-group">
-              ${Object.entries(FREQ_DISCOUNTS).map(([k,v]) => `
-                <div class="pill ${s.freq===k?'active':''}" onclick="updateService(${s.id},'freq','${k}')">${v.label}</div>
-              `).join('')}
+              ${Object.entries(FREQS).map(([k,v])=>`<div class="pill ${s.freq===k?'active':''}" onclick="updateService(${s.id},'freq','${k}')">${v.label}</div>`).join('')}
             </div>
           </div>
-        ` : ''}
+          <div class="suggest-row">
+            <div class="field-group" style="flex:1;margin:0">
+              <label class="field-label">Quote Price (£/session)</label>
+              <input class="field-input" type="number" value="${s.customPrice}" placeholder="Enter or suggest"
+                oninput="updateService(${s.id},'customPrice',this.value)">
+            </div>
+            <button class="suggest-btn" onclick="suggestPrice(${s.id})">Suggest Price</button>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Estimated Hours</label>
+            <input class="field-input" type="number" value="${s.hours}" min="0.5" step="0.5" oninput="updateService(${s.id},'hours',parseFloat(this.value)||0)">
+          </div>`:''}
 
-        ${isPostbuild ? `
+        ${!isEot&&!isCustom?`
+          <div class="field-group">
+            <label class="field-label">Frequency</label>
+            <div class="pill-group">
+              ${Object.entries(FREQS).map(([k,v])=>`<div class="pill ${s.freq===k?'active':''}" onclick="updateService(${s.id},'freq','${k}')">${v.label}</div>`).join('')}
+            </div>
+          </div>
+          <div class="suggest-row">
+            <div class="field-group" style="flex:1;margin:0">
+              <label class="field-label">Override Price (£/session, optional)</label>
+              <input class="field-input" type="number" value="${s.customPrice}" placeholder="Leave blank to use standard"
+                oninput="updateService(${s.id},'customPrice',this.value)">
+            </div>
+            <button class="suggest-btn" onclick="suggestPrice(${s.id})">Suggest</button>
+          </div>`:''}
+
+        ${isEot?`
+          <div class="field-group">
+            <label class="field-label">Estimated Hours</label>
+            <input class="field-input" type="number" value="${s.hours||4}" min="1" step="0.5" oninput="updateService(${s.id},'hours',parseFloat(this.value)||4)">
+          </div>`:''}
+
+        ${s.type==='postbuild'?`
           <div class="field-row">
             <div class="field-group" style="margin:0">
               <label class="field-label">Windows with Residue</label>
-              <input class="field-input" type="number" value="${s.postbuildWindows}" min="0"
-                oninput="updateService(${s.id},'postbuildWindows',parseInt(this.value)||0)">
+              <input class="field-input" type="number" value="${s.postbuildWindows}" min="0" oninput="updateService(${s.id},'postbuildWindows',parseInt(this.value)||0)">
             </div>
             <div class="field-group" style="margin:0">
               <label class="field-label">Severity</label>
@@ -727,452 +440,337 @@
                 <option value="severe"   ${s.postbuildSevere?'selected':''}>Heavy — £8/window</option>
               </select>
             </div>
-          </div>
-        ` : ''}
+          </div>`:''}
 
-        ${!isEot && !showCustom ? `
-          <label class="check-row" onclick="updateService(${s.id},'firstClean',!${s.firstClean})">
+        <!-- Workers per session + work style -->
+        <div class="field-row" style="margin-top:8px;">
+          <div class="field-group" style="margin:0">
+            <label class="field-label">Workers per Session</label>
+            <input class="field-input" type="number" value="${s.workersPerSession||1}" min="1" step="1"
+              oninput="updateService(${s.id},'workersPerSession',parseInt(this.value)||1)">
+          </div>
+          <div class="field-group" style="margin:0">
+            <label class="field-label">Work Style</label>
+            <div class="work-style-toggle">
+              <button class="ws-btn ${s.workStyle==='team'?'active':''}" onclick="setWorkStyle(${s.id},'team')">Team Clean</button>
+              <button class="ws-btn ${s.workStyle==='solo'?'active':''}" onclick="setWorkStyle(${s.id},'solo')">Solo / Rotating</button>
+            </div>
+          </div>
+        </div>
+        ${s.workStyle==='team'&&s.workersPerSession>1?`<p style="font-size:10px;color:var(--light);margin-top:4px;">⚡ ${s.workersPerSession} workers together — hours halved, job done faster</p>`:''}
+        ${s.workStyle==='solo'?`<p style="font-size:10px;color:var(--light);margin-top:4px;">🔄 Rotating staff — 1 worker per session</p>`:''}
+
+        ${!isEot&&!isCustom?`
+          <label class="check-row" style="margin-top:8px;" onclick="updateService(${s.id},'firstClean',!${s.firstClean})">
             <div class="check-box ${s.firstClean?'checked':''}"></div>
             <span class="check-label">First clean</span>
           </label>
-          ${s.firstClean ? `
-            <label class="check-row" onclick="updateService(${s.id},'poorCondition',!${s.poorCondition})">
-              <div class="check-box ${s.poorCondition?'checked':''}"></div>
-              <span class="check-label">Poor condition (deep clean rate +25–50%)</span>
-            </label>
-          ` : ''}
-        ` : ''}
-
+          ${s.firstClean?`
+          <label class="check-row" onclick="updateService(${s.id},'poorCondition',!${s.poorCondition})">
+            <div class="check-box ${s.poorCondition?'checked':''}"></div>
+            <span class="check-label">Poor condition (+35% deep clean rate)</span>
+          </label>`:''}
+        `:''}
       </div>`;
     }).join('');
   }
 
-  // ── ADDON PILLS ──
   function selectAddon(group, el, val) {
-    document.querySelectorAll(`#${group} .pill`).forEach(p => p.classList.remove('active'));
+    document.querySelectorAll(`#${group} .pill`).forEach(p=>p.classList.remove('active'));
     el.classList.add('active');
-    if (group === 'consumables') addonConsumables = val;
-    else addonWellbeing = val;
+    if (group==='consumables') addonConsumables=val; else addonWellbeing=val;
     calc();
   }
 
-  // ── CALCULATION ──
+  function calcLabour(s) {
+    const avgRate = workers.length ? workers.reduce((sum,w)=>sum+(parseFloat(w.rate)||0),0)/workers.length : 15;
+    const wps = parseInt(s.workersPerSession)||1;
+    const baseHours = parseFloat(s.hours)||2;
+    let effectiveHours, labourWorkers;
+    if (s.workStyle==='team' && wps>1) {
+      effectiveHours = baseHours/wps;
+      labourWorkers = wps;
+    } else {
+      effectiveHours = baseHours;
+      labourWorkers = 1;
+    }
+    return labourWorkers * avgRate * effectiveHours;
+  }
+
   function calc() {
-    if (!services.length) return;
+    let totalSessionPrice=0, totalMonthly=0, totalMonthlyLabour=0, totalMonthlySessions=0;
+    let rows=[];
 
-    let totalSessionPrice = 0;
-    let totalLabourCost = 0;
-    let totalMonthly = 0;
-    let breakdownRows = [];
+    services.forEach((s,i)=>{
+      let sessionPrice=0, labourCost=0, spm=1, freqLabel='', windowSurcharge=0;
+      const labour = calcLabour(s);
 
-    // Total hourly labour cost per session
-    const totalHourlyRate = workers.reduce((sum, w) => sum + (parseFloat(w.rate) || 0), 0);
-
-    services.forEach((s, i) => {
-      let basePrice = 0;
-      let sessionPrice = 0;
-      let labourCost = 0;
-      let windowSurcharge = 0;
-      let freqLabel = '';
-      let sessionsPerMonth = 1;
-      let serviceLabel = SIZE_RATES[s.type]?.label || s.type;
-
-      if (s.type === 'eot') {
-        basePrice = EOT_RATES[s.eotSize] || 200;
-        sessionPrice = basePrice;
-        labourCost = (parseFloat(s.hours) || 4) * totalHourlyRate;
-        freqLabel = 'One-off';
-        sessionsPerMonth = 1;
-
-      } else if (s.type === 'cowork' || s.type === 'postbuild') {
-        basePrice = parseFloat(s.customPrice) || 0;
-        const freq = FREQ_DISCOUNTS[s.freq] || FREQ_DISCOUNTS['weekly'];
-        const discount = freq.discount;
-        sessionPrice = discount < 0
-          ? basePrice * (1 + Math.abs(discount))
-          : basePrice * (1 - discount);
-        labourCost = (parseFloat(s.hours) || 0) * totalHourlyRate;
-        freqLabel = freq.label;
-        sessionsPerMonth = freq.sessionsPerMonth;
-
-        if (s.type === 'postbuild') {
-          windowSurcharge = s.postbuildWindows * (s.postbuildSevere ? 8 : 5);
-          sessionPrice += windowSurcharge;
-        }
-
+      if (s.type==='eot') {
+        sessionPrice = EOT[s.eotSize]||200;
+        labourCost = labour;
+        spm=1; freqLabel='One-off';
+      } else if (s.type==='cowork'||s.type==='postbuild') {
+        const base = parseFloat(s.customPrice)||0;
+        const freq = FREQS[s.freq]||FREQS['weekly'];
+        const d = freq.discount;
+        sessionPrice = d<0 ? base*(1+Math.abs(d)) : base*(1-d);
+        labourCost = labour;
+        spm=freq.sessionsPerMonth; freqLabel=freq.label;
+        if (s.type==='postbuild') { windowSurcharge=s.postbuildWindows*(s.postbuildSevere?8:5); sessionPrice+=windowSurcharge; }
       } else {
-        const rate = SIZE_RATES[s.type];
-        basePrice = rate.base;
-        const freq = FREQ_DISCOUNTS[s.freq] || FREQ_DISCOUNTS['weekly'];
-        const discount = freq.discount;
-        sessionPrice = discount < 0
-          ? basePrice * (1 + Math.abs(discount))
-          : basePrice * (1 - discount);
-        labourCost = rate.hours * totalHourlyRate;
-        freqLabel = freq.label;
-        sessionsPerMonth = freq.sessionsPerMonth;
-
-        if (s.firstClean && s.poorCondition) {
-          sessionPrice = sessionPrice * 1.35; // 35% uplift midpoint
-        }
+        const rate=SIZES[s.type];
+        let base = rate.base;
+        if (s.customPrice && parseFloat(s.customPrice)>0) base=parseFloat(s.customPrice);
+        const freq=FREQS[s.freq]||FREQS['weekly'];
+        const d=freq.discount;
+        sessionPrice = d<0 ? base*(1+Math.abs(d)) : base*(1-d);
+        labourCost=labour; spm=freq.sessionsPerMonth; freqLabel=freq.label;
+        if (s.firstClean&&s.poorCondition) sessionPrice*=1.35;
       }
 
-      // Minimum charge
-      if (sessionPrice < 95 && sessionPrice > 0) sessionPrice = 95;
+      if (sessionPrice>0&&sessionPrice<95) sessionPrice=95;
+      const monthly=sessionPrice*spm;
+      const labourPct=sessionPrice>0?(labourCost/sessionPrice)*100:0;
+      const margin=sessionPrice-labourCost-10;
 
-      const monthly = sessionPrice * sessionsPerMonth;
-      const labourPct = sessionPrice > 0 ? (labourCost / sessionPrice) * 100 : 0;
-      const margin = sessionPrice - labourCost - 10; // ~£10 supplies estimate
+      totalSessionPrice+=sessionPrice;
+      totalMonthly+=monthly;
+      totalMonthlyLabour+=labourCost*spm;
+      totalMonthlySessions+=spm;
 
-      totalSessionPrice += sessionPrice;
-      totalLabourCost += labourCost;
-      totalMonthly += monthly;
-
-      breakdownRows.push({
-        label: serviceLabel,
-        sessionPrice, labourCost, labourPct, margin,
-        freqLabel, sessionsPerMonth, monthly, windowSurcharge
-      });
+      rows.push({ label:SIZES[s.type]?.label||s.type, sessionPrice, labourCost, labourPct, margin, freqLabel, spm, monthly, windowSurcharge, type:s.type });
     });
 
-    const totalLabourPct = totalSessionPrice > 0 ? (totalLabourCost / totalSessionPrice) * 100 : 0;
-    const addonsMonthly = addonConsumables + addonWellbeing;
-    const grandTotal = totalMonthly + addonsMonthly;
+    const totalLabourPct = totalSessionPrice>0?(rows.reduce((s,r)=>s+r.labourCost,0)/totalSessionPrice)*100:0;
+    const monthlySupplies = totalMonthlySessions*10;
+    const monthlyProfit = totalMonthly - totalMonthlyLabour - monthlySupplies;
+    const addons = addonConsumables+addonWellbeing;
+    const grand = totalMonthly+addons;
 
-    // ── UPDATE UI ──
     document.getElementById('rSession').textContent = `£${Math.round(totalSessionPrice)}`;
-    document.getElementById('rSessionSub').textContent = services.length > 1 ? `${services.length} services combined` : (breakdownRows[0]?.freqLabel || '—');
+    document.getElementById('rSessionSub').textContent = rows.length>1?`${rows.length} services`:(rows[0]?.freqLabel||'—');
     document.getElementById('rMonthly').textContent = `£${Math.round(totalMonthly)}`;
-    document.getElementById('rMonthlySub').textContent = 'cleaning only';
 
     // Margin indicator
-    const indicator = document.getElementById('marginIndicator');
-    if (totalSessionPrice > 0) {
-      indicator.style.display = 'block';
-      if (totalLabourPct <= 30) {
-        indicator.className = 'margin-indicator margin-good';
-        indicator.textContent = `✓ Healthy margin — labour at ${totalLabourPct.toFixed(0)}% of price`;
-      } else if (totalLabourPct <= 40) {
-        indicator.className = 'margin-indicator margin-warn';
-        indicator.textContent = `⚠ Tight margin — labour at ${totalLabourPct.toFixed(0)}% of price`;
-      } else {
-        indicator.className = 'margin-indicator margin-bad';
-        indicator.textContent = `✕ Poor margin — labour at ${totalLabourPct.toFixed(0)}% of price`;
-      }
-    } else {
-      indicator.style.display = 'none';
-    }
+    const ind = document.getElementById('marginIndicator');
+    if (totalSessionPrice>0) {
+      ind.style.display='block';
+      let msg='', cls='';
+      if (totalLabourPct<=30) { cls='margin-good'; msg=`✓ Healthy — labour at ${totalLabourPct.toFixed(0)}% of price`; }
+      else if (totalLabourPct<=40) { cls='margin-warn'; msg=`⚠ Tight — labour at ${totalLabourPct.toFixed(0)}% of price`; }
+      else if (totalLabourPct<=50) { cls='margin-bad'; msg=`✕ This job is underpriced for your model (${totalLabourPct.toFixed(0)}% labour)`; }
+      else { cls='margin-bad'; msg=`✕ This job will likely lose money unless adjusted (${totalLabourPct.toFixed(0)}% labour)`; }
+      ind.className=`margin-indicator ${cls}`; ind.textContent=msg;
+    } else { ind.style.display='none'; }
 
-    // Breakdown rows (internal)
-    const bEl = document.getElementById('breakdownRows');
-    bEl.innerHTML = breakdownRows.map(r => `
-      <div class="breakdown-row">
-        <span class="breakdown-label">${r.label}</span>
-        <span class="breakdown-value">£${Math.round(r.sessionPrice)}/session</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">Labour cost</span>
-        <span class="breakdown-value">£${r.labourCost.toFixed(2)} (${r.labourPct.toFixed(0)}%)</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">Est. gross margin</span>
-        <span class="breakdown-value">£${Math.round(r.margin)}</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">${r.freqLabel} × ${r.sessionsPerMonth}/mo</span>
-        <span class="breakdown-value">£${Math.round(r.monthly)}/mo</span>
-      </div>
-      ${r.windowSurcharge > 0 ? `
-      <div class="breakdown-row">
-        <span class="breakdown-label">Window surcharge</span>
-        <span class="breakdown-value">£${r.windowSurcharge}</span>
-      </div>` : ''}
-    `).join('<div style="height:8px"></div>');
+    // Profit block
+    document.getElementById('profitRows').innerHTML = `
+      <div class="breakdown-row"><span class="breakdown-label">Monthly labour</span><span class="breakdown-value">−£${Math.round(totalMonthlyLabour)}</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Monthly supplies (est.)</span><span class="breakdown-value">−£${Math.round(monthlySupplies)}</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Est. monthly profit</span><span class="breakdown-value highlight">£${Math.round(monthlyProfit)}</span></div>`;
 
-    // Workers breakdown (internal)
-    const workerBreakdown = workers.map(w =>
-      `<div class="breakdown-row">
-        <span class="breakdown-label">${w.name || 'Worker'} @ £${w.rate}/hr</span>
-        <span class="breakdown-value">£${(w.rate * (breakdownRows[0]?.sessionsPerMonth || 1) * (SIZE_RATES[services[0]?.type]?.hours || services[0]?.hours || 2)).toFixed(0)}/mo</span>
-      </div>`
-    ).join('');
-
-    bEl.innerHTML += `<div style="height:8px;border-top:0.5px solid rgba(255,255,255,0.08);margin-top:8px;"></div>` + workerBreakdown;
+    // Breakdown
+    document.getElementById('breakdownRows').innerHTML = rows.map(r=>`
+      <div class="breakdown-row"><span class="breakdown-label">${r.label}</span><span class="breakdown-value">£${Math.round(r.sessionPrice)}/session</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Labour cost</span><span class="breakdown-value">£${r.labourCost.toFixed(2)} (${r.labourPct.toFixed(0)}%)</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Est. margin</span><span class="breakdown-value">£${Math.round(r.margin)}/session</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">${r.freqLabel} × ${r.spm}/mo</span><span class="breakdown-value">£${Math.round(r.monthly)}/mo</span></div>
+      ${r.windowSurcharge>0?`<div class="breakdown-row"><span class="breakdown-label">Window surcharge</span><span class="breakdown-value">£${r.windowSurcharge}</span></div>`:''}
+    `).join('<div style="height:6px"></div>');
 
     // Add-ons
-    const addonEl = document.getElementById('addonBlock');
-    const addonRows = document.getElementById('addonRows');
-    if (addonsMonthly > 0) {
-      addonEl.style.display = 'block';
-      addonRows.innerHTML = `
-        ${addonConsumables > 0 ? `<div class="breakdown-row"><span class="breakdown-label">Consumables</span><span class="breakdown-value">£${addonConsumables}/mo</span></div>` : ''}
-        ${addonWellbeing > 0 ? `<div class="breakdown-row"><span class="breakdown-label">Wellbeing</span><span class="breakdown-value">£${addonWellbeing}/mo</span></div>` : ''}
-      `;
-      document.getElementById('totalBlock').style.display = 'block';
-      document.getElementById('rTotal').textContent = `£${Math.round(grandTotal)}`;
-    } else {
-      addonEl.style.display = 'none';
-      document.getElementById('totalBlock').style.display = 'none';
-    }
+    const addonEl=document.getElementById('addonBlock');
+    if (addons>0) {
+      addonEl.style.display='block';
+      document.getElementById('addonRows').innerHTML=`
+        ${addonConsumables>0?`<div class="breakdown-row"><span class="breakdown-label">Consumables</span><span class="breakdown-value">£${addonConsumables}/mo</span></div>`:''}
+        ${addonWellbeing>0?`<div class="breakdown-row"><span class="breakdown-label">Wellbeing</span><span class="breakdown-value">£${addonWellbeing}/mo</span></div>`:''}`;
+      document.getElementById('totalBlock').style.display='block';
+      document.getElementById('rTotal').textContent=`£${Math.round(grand)}`;
+    } else { addonEl.style.display='none'; document.getElementById('totalBlock').style.display='none'; }
 
-    // Store for PDF
-    window._calcState = {
-      breakdownRows, totalSessionPrice, totalMonthly,
-      addonsMonthly, grandTotal, totalLabourPct, totalLabourCost,
-      workers, services
-    };
+    window._state = { rows, totalSessionPrice, totalMonthly, totalMonthlyLabour, monthlySupplies, monthlyProfit, addons, grand, totalLabourPct };
   }
 
-  // ── PDF GENERATION ──
+  // ── SAVE / LOAD ──
+  function getFilename(prefix, ext) {
+    const name = (document.getElementById('clientName').value||'Untitled').replace(/\s+/g,'_');
+    const post = (document.getElementById('clientAddress').value||'').replace(/\s+/g,'_').replace(/[^A-Za-z0-9_]/g,'');
+    const date = new Date().toISOString().slice(0,10);
+    const parts = [prefix, name];
+    if (post) parts.push(post);
+    parts.push(date);
+    return parts.join('_')+'.'+ext;
+  }
+
+  function saveQuote() {
+    const data = {
+      clientName: document.getElementById('clientName').value,
+      contactName: document.getElementById('contactName').value,
+      clientAddress: document.getElementById('clientAddress').value,
+      notes: document.getElementById('notes').value,
+      targetLabourPct: document.getElementById('targetLabourPct').value,
+      workers, services, addonConsumables, addonWellbeing
+    };
+    const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = getFilename('Touchstone','json');
+    a.click();
+  }
+
+  function loadQuote(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        document.getElementById('clientName').value = d.clientName||'';
+        document.getElementById('contactName').value = d.contactName||'';
+        document.getElementById('clientAddress').value = d.clientAddress||'';
+        document.getElementById('notes').value = d.notes||'';
+        document.getElementById('targetLabourPct').value = d.targetLabourPct||30;
+        workers = d.workers||[];
+        services = d.services||[];
+        addonConsumables = d.addonConsumables||0;
+        addonWellbeing = d.addonWellbeing||0;
+        wId = workers.length ? Math.max(...workers.map(w=>w.id))+1 : 0;
+        sId = services.length ? Math.max(...services.map(s=>s.id))+1 : 0;
+        // Restore addon pills
+        ['consumables','wellbeing'].forEach(g=>{
+          const val = g==='consumables'?addonConsumables:addonWellbeing;
+          document.querySelectorAll(`#${g} .pill`).forEach(p=>{ p.classList.toggle('active', parseFloat(p.getAttribute('onclick')?.match(/\d+/)?.[0]||0)===val); });
+        });
+        renderWorkers(); renderServices(); calc();
+      } catch { alert('Could not load quote — invalid file.'); }
+    };
+    reader.readAsText(file);
+    e.target.value='';
+  }
+
+  // ── PDF ──
   function downloadPDF(type) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    const state = window._calcState;
-    if (!state) return;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const st = window._state;
+    if (!st) return;
 
-    const navy  = [26, 26, 46];
-    const gold  = [201, 168, 76];
-    const cream = [248, 246, 241];
-    const mid   = [85, 85, 85];
-    const light = [153, 153, 153];
-    const white = [255, 255, 255];
-    const rule  = [224, 221, 215];
+    const W=210, M=20;
+    const navy=[26,26,46], gold=[201,168,76], cream=[248,246,241], mid=[85,85,85], light=[153,153,153], white=[255,255,255], rule=[224,221,215];
+    let y=0;
 
-    const W = 210;
-    const margin = 20;
-    let y = 0;
+    doc.setFillColor(...navy); doc.rect(0,0,W,30,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(...white);
+    doc.text('TOUCHSTONE CLEANERS', M, 13);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(...gold);
+    doc.text('C L E A N E R S', M, 19);
+    doc.setFontSize(7); doc.setTextColor(200,200,200);
+    doc.text(type==='internal'?'INTERNAL ESTIMATE':'CLIENT QUOTE', W-M, 13, {align:'right'});
+    doc.text(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), W-M, 19, {align:'right'});
+    y=38;
 
-    // Header bar
-    doc.setFillColor(...navy);
-    doc.rect(0, 0, W, 32, 'F');
+    doc.setDrawColor(...gold); doc.setLineWidth(0.6); doc.line(M,y,W-M,y); y+=7;
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(...white);
-    doc.text('TOUCHSTONE CLEANERS', margin, 14);
+    const cn=document.getElementById('clientName').value||'—';
+    const contact=document.getElementById('contactName').value;
+    const addr=document.getElementById('clientAddress').value;
+    const notes=document.getElementById('notes').value;
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(...gold);
-    doc.text('C L E A N E R S', margin, 20);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...light); doc.text('PREPARED FOR', M, y); y+=5;
+    doc.setFontSize(12); doc.setTextColor(...navy); doc.text(cn, M, y); y+=5;
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...mid);
+    if (contact) { doc.text(contact, M, y); y+=4; }
+    if (addr) { doc.text(addr, M, y); y+=4; }
+    y+=4;
 
-    const typeLabel = type === 'internal' ? 'INTERNAL ESTIMATE' : 'CLIENT QUOTE';
-    doc.setFontSize(8);
-    doc.setTextColor(200, 200, 200);
-    doc.text(typeLabel, W - margin, 14, { align: 'right' });
+    doc.setDrawColor(...rule); doc.setLineWidth(0.2); doc.line(M,y,W-M,y); y+=6;
 
-    const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    doc.text(dateStr, W - margin, 20, { align: 'right' });
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...light); doc.text('SERVICES', M, y); y+=5;
 
-    y = 40;
+    st.rows.forEach((r,i)=>{
+      doc.setFillColor(...(i%2===0?cream:white));
+      doc.rect(M, y-3, W-M*2, 14, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...navy);
+      doc.text(r.label, M+2, y+2);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...mid);
+      doc.text(r.freqLabel, M+2, y+7);
+      doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...navy);
+      doc.text(`£${Math.round(r.sessionPrice)}/session`, W-M-2, y+2, {align:'right'});
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...mid);
+      doc.text(`£${Math.round(r.monthly)}/month`, W-M-2, y+7, {align:'right'});
+      y+=16;
 
-    // Gold rule
-    doc.setDrawColor(...gold);
-    doc.setLineWidth(0.8);
-    doc.line(margin, y, W - margin, y);
-    y += 8;
-
-    // Client details
-    const clientName = document.getElementById('clientName').value || '—';
-    const contactName = document.getElementById('contactName').value || '—';
-    const clientAddress = document.getElementById('clientAddress').value || '—';
-    const notes = document.getElementById('notes').value || '';
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...light);
-    doc.text('PREPARED FOR', margin, y);
-    y += 5;
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13);
-    doc.setTextColor(...navy);
-    doc.text(clientName, margin, y);
-    y += 5;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(...mid);
-    if (contactName !== '—') doc.text(contactName, margin, y), y += 4;
-    doc.text(clientAddress, margin, y);
-    y += 10;
-
-    // Rule
-    doc.setDrawColor(...rule);
-    doc.setLineWidth(0.3);
-    doc.line(margin, y, W - margin, y);
-    y += 8;
-
-    // Services
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...light);
-    doc.text('SERVICES', margin, y);
-    y += 6;
-
-    state.breakdownRows.forEach((r, i) => {
-      // Row bg
-      doc.setFillColor(...(i % 2 === 0 ? cream : white));
-      doc.rect(margin, y - 4, W - margin * 2, 12, 'F');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.setTextColor(...navy);
-      doc.text(r.label, margin + 2, y + 2);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(...mid);
-      doc.text(r.freqLabel, margin + 2, y + 6);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.setTextColor(...navy);
-      doc.text(`£${Math.round(r.sessionPrice)}/session`, W - margin - 2, y + 2, { align: 'right' });
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(...mid);
-      doc.text(`£${Math.round(r.monthly)}/month`, W - margin - 2, y + 6, { align: 'right' });
-
-      y += 14;
-
-      // Internal extras
-      if (type === 'internal') {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(...light);
-        doc.text(`Labour: £${r.labourCost.toFixed(2)} (${r.labourPct.toFixed(0)}% of price)   Est. margin: £${Math.round(r.margin)}/session`, margin + 2, y);
-        if (r.windowSurcharge > 0) {
-          y += 4;
-          doc.text(`Window surcharge: £${r.windowSurcharge}`, margin + 2, y);
-        }
-        y += 6;
+      if (type==='internal') {
+        doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(...light);
+        doc.text(`Labour: £${r.labourCost.toFixed(2)} (${r.labourPct.toFixed(0)}%)  ·  Est. margin: £${Math.round(r.margin)}/session`, M+2, y);
+        y+=6;
       }
     });
 
-    y += 2;
-    doc.setDrawColor(...rule);
-    doc.setLineWidth(0.3);
-    doc.line(margin, y, W - margin, y);
-    y += 6;
+    y+=2; doc.setDrawColor(...rule); doc.setLineWidth(0.2); doc.line(M,y,W-M,y); y+=6;
 
-    // Add-ons
-    if (state.addonsMonthly > 0) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(...light);
-      doc.text('ADD-ONS', margin, y);
-      y += 6;
-
-      if (addonConsumables > 0) {
-        doc.setFillColor(...cream);
-        doc.rect(margin, y - 4, W - margin * 2, 10, 'F');
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(...navy);
-        doc.text('Workspace Consumables', margin + 2, y + 1);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`£${addonConsumables}/month`, W - margin - 2, y + 1, { align: 'right' });
-        y += 12;
+    if (st.addons>0) {
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...light); doc.text('ADD-ONS', M, y); y+=5;
+      if (addonConsumables>0) {
+        doc.setFillColor(...cream); doc.rect(M,y-3,W-M*2,10,'F');
+        doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...navy);
+        doc.text('Workspace Consumables', M+2, y+2);
+        doc.setFont('helvetica','bold'); doc.text(`£${addonConsumables}/month`, W-M-2, y+2, {align:'right'}); y+=12;
       }
-      if (addonWellbeing > 0) {
-        doc.setFillColor(...white);
-        doc.rect(margin, y - 4, W - margin * 2, 10, 'F');
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(...navy);
-        doc.text('Workspace Wellbeing', margin + 2, y + 1);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`£${addonWellbeing}/month`, W - margin - 2, y + 1, { align: 'right' });
-        y += 12;
+      if (addonWellbeing>0) {
+        doc.setFillColor(...white); doc.rect(M,y-3,W-M*2,10,'F');
+        doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...navy);
+        doc.text('Workspace Wellbeing', M+2, y+2);
+        doc.setFont('helvetica','bold'); doc.text(`£${addonWellbeing}/month`, W-M-2, y+2, {align:'right'}); y+=12;
       }
-
-      doc.setDrawColor(...rule);
-      doc.setLineWidth(0.3);
-      doc.line(margin, y, W - margin, y);
-      y += 6;
+      doc.setDrawColor(...rule); doc.setLineWidth(0.2); doc.line(M,y,W-M,y); y+=6;
     }
 
-    // Totals
-    doc.setFillColor(...navy);
-    doc.rect(margin, y, W - margin * 2, 14, 'F');
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(...gold);
-    doc.text('MONTHLY TOTAL', margin + 4, y + 5);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(...white);
-    doc.text(`£${Math.round(state.grandTotal)}`, W - margin - 4, y + 9, { align: 'right' });
-    y += 20;
+    doc.setFillColor(...navy); doc.rect(M,y,W-M*2,14,'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...gold);
+    doc.text('MONTHLY TOTAL', M+4, y+5);
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...white);
+    doc.text(`£${Math.round(st.grand)}`, W-M-4, y+10, {align:'right'}); y+=20;
 
-    // Internal workers section
-    if (type === 'internal') {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(...light);
-      doc.text('WORKERS', margin, y);
-      y += 6;
+    if (type==='internal') {
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...light); doc.text('PROFIT ESTIMATE', M, y); y+=5;
+      doc.setFillColor(...cream); doc.rect(M,y-3,W-M*2,22,'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...mid);
+      doc.text(`Monthly labour: −£${Math.round(st.totalMonthlyLabour)}`, M+2, y+2);
+      doc.text(`Monthly supplies (est.): −£${Math.round(st.monthlySupplies)}`, M+2, y+8);
+      doc.setFont('helvetica','bold'); doc.setTextColor(...navy);
+      doc.text(`Est. monthly profit: £${Math.round(st.monthlyProfit)}`, M+2, y+14); y+=24;
 
-      state.workers.forEach((w, i) => {
-        doc.setFillColor(...(i % 2 === 0 ? cream : white));
-        doc.rect(margin, y - 4, W - margin * 2, 8, 'F');
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.setTextColor(...mid);
-        doc.text(`${w.name || 'Worker'} — £${w.rate}/hour`, margin + 2, y + 0);
-        y += 10;
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...light); doc.text('TEAM', M, y); y+=5;
+      workers.forEach((w,i)=>{
+        doc.setFillColor(...(i%2===0?cream:white)); doc.rect(M,y-3,W-M*2,8,'F');
+        doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...mid);
+        doc.text(`${w.name||'Worker'} — £${w.rate}/hr`, M+2, y+1); y+=10;
       });
 
-      y += 4;
-      doc.setFillColor(232, 245, 233);
-      doc.rect(margin, y, W - margin * 2, 10, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(46, 125, 50);
-      const marginStatus = state.totalLabourPct <= 30 ? `✓ Healthy — labour at ${state.totalLabourPct.toFixed(0)}% of price` :
-                           state.totalLabourPct <= 40 ? `⚠ Tight — labour at ${state.totalLabourPct.toFixed(0)}% of price` :
-                           `✕ Poor — labour at ${state.totalLabourPct.toFixed(0)}% of price`;
-      doc.text(marginStatus, margin + 4, y + 7);
-      y += 16;
+      const mpct=st.totalLabourPct;
+      const mCol=mpct<=30?[46,125,50]:mpct<=40?[230,81,0]:[198,40,40];
+      doc.setFillColor(...(mpct<=30?[232,245,233]:mpct<=40?[255,243,224]:[255,235,238]));
+      doc.rect(M,y,W-M*2,10,'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...mCol);
+      const msg=mpct<=30?`✓ Healthy — labour at ${mpct.toFixed(0)}%`:mpct<=40?`⚠ Tight — labour at ${mpct.toFixed(0)}%`:mpct<=50?`✕ Underpriced — labour at ${mpct.toFixed(0)}%`:`✕ Will likely lose money — labour at ${mpct.toFixed(0)}%`;
+      doc.text(msg, M+4, y+7); y+=16;
 
-      if (notes) {
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(8);
-        doc.setTextColor(...light);
-        doc.text(`Notes: ${notes}`, margin, y);
-        y += 8;
-      }
+      if (notes) { doc.setFont('helvetica','italic'); doc.setFontSize(7); doc.setTextColor(...light); doc.text(`Notes: ${notes}`, M, y); y+=8; }
     }
 
-    // Footer
-    const footerY = 275;
-    doc.setDrawColor(...gold);
-    doc.setLineWidth(0.5);
-    doc.line(margin, footerY, W - margin, footerY);
+    const fy=275;
+    doc.setDrawColor(...gold); doc.setLineWidth(0.4); doc.line(M,fy,W-M,fy);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(...light);
+    doc.text('Touchstone Cleaners · The Revenue Rooms Ltd', M, fy+5);
+    doc.text('li@touchstonecleaners.co.uk · 07592 526265 · touchstonecleaners.co.uk', M, fy+9);
+    if (type==='client') { doc.setFont('helvetica','italic'); doc.text('All prices bespoke to this quote. Valid for 30 days.', W-M, fy+7, {align:'right'}); }
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(...light);
-    doc.text('Touchstone Cleaners · The Revenue Rooms Ltd', margin, footerY + 5);
-    doc.text('li@touchstonecleaners.co.uk · 07592 526265 · touchstonecleaners.co.uk', margin, footerY + 9);
-
-    if (type === 'client') {
-      doc.setFont('helvetica', 'italic');
-      doc.text('All prices are bespoke to this quote. Valid for 30 days from the date above.', W - margin, footerY + 7, { align: 'right' });
-    }
-
-    const filename = type === 'internal'
-      ? `Touchstone_Internal_Estimate_${clientName.replace(/\s/g,'_')}.pdf`
-      : `Touchstone_Quote_${clientName.replace(/\s/g,'_')}.pdf`;
-
-    doc.save(filename);
+    doc.save(getFilename(type==='internal'?'Touchstone_Internal':'Touchstone_Quote','pdf'));
   }
 
-  // Initial calc
   calc();
 </script>
-
 </body>
 </html>
