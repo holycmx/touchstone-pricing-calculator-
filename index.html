@@ -327,6 +327,25 @@
     margin-top: 4px;
   }
 
+  .mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .mini-stat-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 3px;
+  }
+  .mini-stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    color: white;
+    line-height: 1.1;
+  }
+
   .breakdown-row {
     display: flex;
     justify-content: space-between;
@@ -501,6 +520,29 @@
       <div class="result-sub" id="rMonthlySub">cleaning only</div>
     </div>
 
+    <!-- NEW: Labour & Margin summary — internal only -->
+    <div class="result-block internal-only" id="marginSummaryBlock">
+      <div class="result-label">Labour &amp; Gross Margin</div>
+      <div class="mini-grid" style="margin-top:8px;">
+        <div>
+          <div class="mini-stat-label">Est. Labour Hours</div>
+          <div class="mini-stat-value" id="rLabourHours">0 hrs</div>
+        </div>
+        <div>
+          <div class="mini-stat-label">Labour Cost</div>
+          <div class="mini-stat-value" id="rLabourCost">£0</div>
+        </div>
+        <div>
+          <div class="mini-stat-label">Gross Margin (£)</div>
+          <div class="mini-stat-value" id="rMarginGBP">£0</div>
+        </div>
+        <div>
+          <div class="mini-stat-label">Gross Margin (%)</div>
+          <div class="mini-stat-value" id="rMarginPct">0%</div>
+        </div>
+      </div>
+    </div>
+
     <div class="result-block internal-only" id="breakdownBlock">
       <div class="result-label">Cost Breakdown</div>
       <div id="breakdownRows"></div>
@@ -559,6 +601,14 @@
 
   const EOT_RATES = { '1bed': 200, '2bed': 260, '3bed': 320 };
 
+  // Site Complexity — applies to the base session rate for size-banded office cleans
+  // (matches Master Document Section 3: complexity is applied to "the base session rate")
+  const COMPLEXITY = {
+    'low':      { label: 'Low Complexity',      short: 'Low (-10%)',  adj: -0.10 },
+    'standard': { label: 'Standard Complexity', short: 'Standard',    adj: 0     },
+    'high':     { label: 'High Complexity',     short: 'High (+20%)',adj: 0.20  },
+  };
+
   // ── INIT ──
   addWorker();
   addService();
@@ -574,7 +624,8 @@
   // ── WORKERS ──
   function addWorker() {
     const id = workerIdCounter++;
-    workers.push({ id, name: id === 0 ? 'Li' : '', rate: 15 });
+    // Internal labour planning rate — £18/hour (Master Document, Section 3, updated June 2026)
+    workers.push({ id, name: id === 0 ? 'Li' : '', rate: 18 });
     renderWorkers();
     calc();
   }
@@ -618,7 +669,8 @@
       customPrice: '', hours: 2,
       firstClean: false, poorCondition: false,
       postbuildWindows: 0, postbuildSevere: false,
-      eotSize: '1bed', coworkPrice: ''
+      eotSize: '1bed', coworkPrice: '',
+      complexity: 'standard'
     });
     renderServices();
     calc();
@@ -650,6 +702,7 @@
       const isEot = s.type === 'eot';
       const isCowork = s.type === 'cowork';
       const isPostbuild = s.type === 'postbuild';
+      const isSizeBand = !isEot && !isCowork && !isPostbuild;
       const showFreq = !isEot;
       const showCustom = isCowork || isPostbuild;
       const showHours = !isEot;
@@ -672,6 +725,17 @@
             <option value="postbuild" ${s.type==='postbuild'?'selected':''}>Post-Build / Construction</option>
           </select>
         </div>
+
+        ${isSizeBand ? `
+          <div class="field-group">
+            <label class="field-label">Site Complexity</label>
+            <select class="field-input" onchange="updateService(${s.id},'complexity',this.value)">
+              <option value="low"      ${s.complexity==='low'?'selected':''}>Low — Simple layout, low occupancy (-10%)</option>
+              <option value="standard" ${s.complexity==='standard'||!s.complexity?'selected':''}>Standard (0%)</option>
+              <option value="high"     ${s.complexity==='high'?'selected':''}>High — Multi-floor, heavy traffic, glass-heavy (+20%)</option>
+            </select>
+          </div>
+        ` : ''}
 
         ${isEot ? `
           <div class="field-group">
@@ -763,24 +827,28 @@
     let totalSessionPrice = 0;
     let totalLabourCost = 0;
     let totalMonthly = 0;
+    let totalHours = 0;
     let breakdownRows = [];
 
-    // Total hourly labour cost per session
+    // Total hourly labour cost per session (across all workers assigned)
     const totalHourlyRate = workers.reduce((sum, w) => sum + (parseFloat(w.rate) || 0), 0);
 
     services.forEach((s, i) => {
       let basePrice = 0;
       let sessionPrice = 0;
       let labourCost = 0;
+      let hoursUsed = 0;
       let windowSurcharge = 0;
       let freqLabel = '';
       let sessionsPerMonth = 1;
       let serviceLabel = SIZE_RATES[s.type]?.label || s.type;
+      let complexityLabel = null;
 
       if (s.type === 'eot') {
         basePrice = EOT_RATES[s.eotSize] || 200;
         sessionPrice = basePrice;
-        labourCost = (parseFloat(s.hours) || 4) * totalHourlyRate;
+        hoursUsed = parseFloat(s.hours) || 4;
+        labourCost = hoursUsed * totalHourlyRate;
         freqLabel = 'One-off';
         sessionsPerMonth = 1;
 
@@ -791,7 +859,8 @@
         sessionPrice = discount < 0
           ? basePrice * (1 + Math.abs(discount))
           : basePrice * (1 - discount);
-        labourCost = (parseFloat(s.hours) || 0) * totalHourlyRate;
+        hoursUsed = parseFloat(s.hours) || 0;
+        labourCost = hoursUsed * totalHourlyRate;
         freqLabel = freq.label;
         sessionsPerMonth = freq.sessionsPerMonth;
 
@@ -801,14 +870,21 @@
         }
 
       } else {
+        // Size-banded office cleans — Site Complexity applies here
         const rate = SIZE_RATES[s.type];
-        basePrice = rate.base;
+        const complexity = COMPLEXITY[s.complexity] || COMPLEXITY.standard;
+        const complexityMult = 1 + complexity.adj;
+        if (complexity.adj !== 0) complexityLabel = complexity.short;
+
+        basePrice = rate.base * complexityMult;
+        hoursUsed = rate.hours * complexityMult; // complexity affects labour forecasting too
+
         const freq = FREQ_DISCOUNTS[s.freq] || FREQ_DISCOUNTS['weekly'];
         const discount = freq.discount;
         sessionPrice = discount < 0
           ? basePrice * (1 + Math.abs(discount))
           : basePrice * (1 - discount);
-        labourCost = rate.hours * totalHourlyRate;
+        labourCost = hoursUsed * totalHourlyRate;
         freqLabel = freq.label;
         sessionsPerMonth = freq.sessionsPerMonth;
 
@@ -821,21 +897,25 @@
       if (sessionPrice < 95 && sessionPrice > 0) sessionPrice = 95;
 
       const monthly = sessionPrice * sessionsPerMonth;
-      const labourPct = sessionPrice > 0 ? (labourCost / sessionPrice) * 100 : 0;
-      const margin = sessionPrice - labourCost - 10; // ~£10 supplies estimate
+      const margin = sessionPrice - labourCost - 10; // £10 supplies/overhead estimate per session
+      const marginPct = sessionPrice > 0 ? (margin / sessionPrice) * 100 : 0;
 
       totalSessionPrice += sessionPrice;
       totalLabourCost += labourCost;
       totalMonthly += monthly;
+      totalHours += hoursUsed;
 
       breakdownRows.push({
         label: serviceLabel,
-        sessionPrice, labourCost, labourPct, margin,
-        freqLabel, sessionsPerMonth, monthly, windowSurcharge
+        sessionPrice, labourCost, hoursUsed, margin, marginPct,
+        freqLabel, sessionsPerMonth, monthly, windowSurcharge, complexityLabel
       });
     });
 
-    const totalLabourPct = totalSessionPrice > 0 ? (totalLabourCost / totalSessionPrice) * 100 : 0;
+    const totalOverhead = services.length * 10; // £10 per session, aggregated
+    const totalMargin = totalSessionPrice - totalLabourCost - totalOverhead;
+    const totalMarginPct = totalSessionPrice > 0 ? (totalMargin / totalSessionPrice) * 100 : 0;
+
     const addonsMonthly = addonConsumables + addonWellbeing;
     const grandTotal = totalMonthly + addonsMonthly;
 
@@ -845,19 +925,26 @@
     document.getElementById('rMonthly').textContent = `£${Math.round(totalMonthly)}`;
     document.getElementById('rMonthlySub').textContent = 'cleaning only';
 
-    // Margin indicator
+    // Labour & Margin summary (internal only)
+    document.getElementById('rLabourHours').textContent = `${totalHours.toFixed(1)} hrs`;
+    document.getElementById('rLabourCost').textContent = `£${totalLabourCost.toFixed(2)}`;
+    document.getElementById('rMarginGBP').textContent = `£${Math.round(totalMargin)}`;
+    document.getElementById('rMarginPct').textContent = `${totalMarginPct.toFixed(0)}%`;
+
+    // Margin indicator — Gross Margin % thresholds (replaces old labour-% rule)
+    // 🟢 70%+   🟡 60–69%   🔴 below 60%
     const indicator = document.getElementById('marginIndicator');
     if (totalSessionPrice > 0) {
       indicator.style.display = 'block';
-      if (totalLabourPct <= 30) {
+      if (totalMarginPct >= 70) {
         indicator.className = 'margin-indicator margin-good';
-        indicator.textContent = `✓ Healthy margin — labour at ${totalLabourPct.toFixed(0)}% of price`;
-      } else if (totalLabourPct <= 40) {
+        indicator.textContent = `🟢 Healthy margin — ${totalMarginPct.toFixed(0)}% gross margin`;
+      } else if (totalMarginPct >= 60) {
         indicator.className = 'margin-indicator margin-warn';
-        indicator.textContent = `⚠ Tight margin — labour at ${totalLabourPct.toFixed(0)}% of price`;
+        indicator.textContent = `🟡 Within target — ${totalMarginPct.toFixed(0)}% gross margin`;
       } else {
         indicator.className = 'margin-indicator margin-bad';
-        indicator.textContent = `✕ Poor margin — labour at ${totalLabourPct.toFixed(0)}% of price`;
+        indicator.textContent = `🔴 Below target — ${totalMarginPct.toFixed(0)}% gross margin`;
       }
     } else {
       indicator.style.display = 'none';
@@ -867,16 +954,16 @@
     const bEl = document.getElementById('breakdownRows');
     bEl.innerHTML = breakdownRows.map(r => `
       <div class="breakdown-row">
-        <span class="breakdown-label">${r.label}</span>
+        <span class="breakdown-label">${r.label}${r.complexityLabel ? ' · ' + r.complexityLabel : ''}</span>
         <span class="breakdown-value">£${Math.round(r.sessionPrice)}/session</span>
       </div>
       <div class="breakdown-row">
-        <span class="breakdown-label">Labour cost</span>
-        <span class="breakdown-value">£${r.labourCost.toFixed(2)} (${r.labourPct.toFixed(0)}%)</span>
+        <span class="breakdown-label">Labour — ${r.hoursUsed.toFixed(1)} hrs</span>
+        <span class="breakdown-value">£${r.labourCost.toFixed(2)}</span>
       </div>
       <div class="breakdown-row">
-        <span class="breakdown-label">Est. gross margin</span>
-        <span class="breakdown-value">£${Math.round(r.margin)}</span>
+        <span class="breakdown-label">Gross margin</span>
+        <span class="breakdown-value">£${Math.round(r.margin)} (${r.marginPct.toFixed(0)}%)</span>
       </div>
       <div class="breakdown-row">
         <span class="breakdown-label">${r.freqLabel} × ${r.sessionsPerMonth}/mo</span>
@@ -918,7 +1005,8 @@
     // Store for PDF
     window._calcState = {
       breakdownRows, totalSessionPrice, totalMonthly,
-      addonsMonthly, grandTotal, totalLabourPct, totalLabourCost,
+      addonsMonthly, grandTotal,
+      totalLabourCost, totalHours, totalMargin, totalMarginPct,
       workers, services
     };
   }
@@ -1023,7 +1111,7 @@
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(...mid);
-      doc.text(r.freqLabel, margin + 2, y + 6);
+      doc.text(`${r.freqLabel}${r.complexityLabel ? ' · ' + r.complexityLabel : ''}`, margin + 2, y + 6);
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
@@ -1042,7 +1130,7 @@
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
         doc.setTextColor(...light);
-        doc.text(`Labour: £${r.labourCost.toFixed(2)} (${r.labourPct.toFixed(0)}% of price)   Est. margin: £${Math.round(r.margin)}/session`, margin + 2, y);
+        doc.text(`Labour: £${r.labourCost.toFixed(2)} (${r.hoursUsed.toFixed(1)} hrs)   Gross margin: £${Math.round(r.margin)} (${r.marginPct.toFixed(0)}%)`, margin + 2, y);
         if (r.windowSurcharge > 0) {
           y += 4;
           doc.text(`Window surcharge: £${r.windowSurcharge}`, margin + 2, y);
@@ -1107,8 +1195,27 @@
     doc.text(`£${Math.round(state.grandTotal)}`, W - margin - 4, y + 9, { align: 'right' });
     y += 20;
 
-    // Internal workers section
+    // Internal: Labour & Margin summary + Workers
     if (type === 'internal') {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(...light);
+      doc.text('LABOUR & GROSS MARGIN', margin, y);
+      y += 6;
+
+      doc.setFillColor(...cream);
+      doc.rect(margin, y - 4, W - margin * 2, 16, 'F');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...mid);
+      doc.text(`Est. Labour Hours: ${state.totalHours.toFixed(1)} hrs`, margin + 3, y + 2);
+      doc.text(`Labour Cost: £${state.totalLabourCost.toFixed(2)}`, margin + 3, y + 8);
+      doc.text(`Gross Margin: £${Math.round(state.totalMargin)}`, margin + 105, y + 2);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...navy);
+      doc.text(`Gross Margin %: ${state.totalMarginPct.toFixed(0)}%`, margin + 105, y + 8);
+      y += 20;
+
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(...light);
@@ -1126,15 +1233,25 @@
       });
 
       y += 4;
-      doc.setFillColor(232, 245, 233);
+      // Gross margin status — replaces old labour-% rule (30%/40% thresholds)
+      // 🟢 70%+   🟡 60–69%   🔴 below 60%
+      let statusFill, statusColor, statusText;
+      if (state.totalMarginPct >= 70) {
+        statusFill = [232, 245, 233]; statusColor = [46, 125, 50];
+        statusText = `Healthy — ${state.totalMarginPct.toFixed(0)}% gross margin`;
+      } else if (state.totalMarginPct >= 60) {
+        statusFill = [255, 243, 224]; statusColor = [230, 81, 0];
+        statusText = `Within target — ${state.totalMarginPct.toFixed(0)}% gross margin`;
+      } else {
+        statusFill = [255, 235, 238]; statusColor = [198, 40, 40];
+        statusText = `Below target — ${state.totalMarginPct.toFixed(0)}% gross margin`;
+      }
+      doc.setFillColor(...statusFill);
       doc.rect(margin, y, W - margin * 2, 10, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
-      doc.setTextColor(46, 125, 50);
-      const marginStatus = state.totalLabourPct <= 30 ? `✓ Healthy — labour at ${state.totalLabourPct.toFixed(0)}% of price` :
-                           state.totalLabourPct <= 40 ? `⚠ Tight — labour at ${state.totalLabourPct.toFixed(0)}% of price` :
-                           `✕ Poor — labour at ${state.totalLabourPct.toFixed(0)}% of price`;
-      doc.text(marginStatus, margin + 4, y + 7);
+      doc.setTextColor(...statusColor);
+      doc.text(statusText, margin + 4, y + 7);
       y += 16;
 
       if (notes) {
